@@ -6,6 +6,7 @@ from VideoPlayer import VideoPlayer
 
 class OpenFileSignals(QObject):
     videoSelected = pyqtSignal(str)
+    csvSelected = pyqtSignal(str)
 
 class FileSelection:
     def __init__(self, signals):
@@ -15,8 +16,8 @@ class FileSelection:
         dialog = QFileDialog(parent)
 
         if sender.text() == "Browse Video":  # Check button text to determine filter
-            dialog.setNameFilter("Video (*.mp4)")
-        elif sender.text() == "Browse Accel":
+            dialog.setNameFilter("Video (*.MP4)")
+        elif sender.text() == "Browse CSV":
             dialog.setNameFilter("CSV (*.csv)")
 
         dialog.setFileMode(QFileDialog.FileMode.ExistingFiles)
@@ -27,9 +28,11 @@ class FileSelection:
                 if filenames:
                     filename_only = Path(filenames[0]).name
 
-                    if sender.text() == "Browse Video":
+                    if sender.text() == "Browse Video" and video_label is not None:
                         video_label.setText(filename_only)
                         video_path = filenames[0]
                         self.signals.videoSelected.emit(video_path)  # Emit the signal here
-                    elif sender.text() == "Browse Accel":
+                    elif sender.text() == "Browse CSV" and csv_label is not None:
                         csv_label.setText(filename_only)
+                        csv_path = filenames[0]
+                        self.signals.csvSelected.emit(csv_path) # same but for csv

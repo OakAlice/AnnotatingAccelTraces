@@ -37,7 +37,6 @@ class VideoPlayer(QWidget):
         self.player.durationChanged.connect(self.duration_changed)
         self.player.positionChanged.connect(self.position_changed)
 
-
         # Arrange buttons
         controlLayout = QHBoxLayout()
         controlLayout.addWidget(self.rewindButton)

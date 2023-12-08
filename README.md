@@ -4,8 +4,9 @@ This is the progress for creating a new script/exe for annotating accelerometer 
 This version can currently only accept Axivity AX3's and MP4s and also lacks error handling.
 
 # Files
-main.py -> Launches the window
-MainWindow.py -> Controls the layout and slots of each element
-OpenFiles.py -> Search directory for video and csv, display their names
-VideoPlayer.py -> Display and control the video
-DisplayAccel.py -> Plot and navigate through the accel csv
+* main.py -> Launches the window
+* MainWindow.py -> Controls the layout and slots of each element
+* OpenFiles.py -> Search directory for video and csv, display their names
+* VideoPlayer.py -> Display and control the video
+* DisplayAccel.py -> Plot and navigate through the accel csv
+* BehaviourButtons.py -> Create, name, and colour buttons

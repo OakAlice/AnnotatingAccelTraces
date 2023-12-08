@@ -51,13 +51,16 @@ class PlotWidget(QWidget):
         self.dataframe = None
         self.zoom_level = 1
 
+    # functions
+    # load in the data, plot it, and the vertical line
     def load_data(self, dataframe):
         self.dataframe = dataframe
         self.plot_data(0)
-
+        #self.guideline = self.ax.axvline(x=self.dataframe.iloc[0, 0], color='red', linewidth=1)
         # Set scrollbar range
         self.scrollbar.setRange(0, len(dataframe) - 1)
 
+    # the plot function specifically
     def plot_data(self, start_index):
         if self.dataframe is not None:
             # Plot the entire data
@@ -65,8 +68,11 @@ class PlotWidget(QWidget):
             self.ax.plot(self.dataframe.iloc[:, 0], self.dataframe.iloc[:, 1], color='red', linewidth=0.5)
             self.ax.plot(self.dataframe.iloc[:, 0], self.dataframe.iloc[:, 2], color='green', linewidth=0.5)
             self.ax.plot(self.dataframe.iloc[:, 0], self.dataframe.iloc[:, 3], color='blue', linewidth=0.5)
+            # Add the initial vertical line
+            if not hasattr(self, 'time_line') or self.time_line is None:
+                self.time_line = self.ax.axvline(x=self.dataframe.iloc[0, 0], color='red', linewidth=1)
+
             self.figure.subplots_adjust(left=0, right=1, top=1, bottom=0)
-            
             self.canvas.draw()
 
     def zoom_in(self):

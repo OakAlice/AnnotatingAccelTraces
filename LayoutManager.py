@@ -25,15 +25,15 @@ class LayoutManager(QWidget):
         self.csvFrameRate = QSpinBox()
         self.csvFrameRate.setRange(1, 240) 
 
-        # plot the csv
-        self.plotWidget = PlotWidget()
-
         # slide the guide line
         self.guidelineSlider = QSlider(Qt.Orientation.Horizontal)
         self.guidelineSlider.setRange(0, 100)  ## TODO: Edit this to be dynamic
 
         # the video
         self.videoPlayer = VideoPlayer()
+
+        # plot the csv
+        self.plotWidget = PlotWidget(self.videoPlayer.videoPositionChanged, self.csvFrameRate.valueChanged)
 
         # Behaviour buttons
         self.behaviourButtons = NewButton()
@@ -71,15 +71,12 @@ class LayoutManager(QWidget):
         csvBottomLayout.addWidget(self.csvFrameRate)
         csvLayout.addLayout(csvBottomLayout)
 
-        # Behaviour buttons layout
-        ## here
-
         # Add the layouts to the main grid layout
-        layout.addLayout(videoLayout, 0, 0)
-        layout.addLayout(csvLayout, 1, 0)
-        layout.addWidget(self.plotWidget, 6, 0, 1, 6)
-        layout.addWidget(self.videoPlayer, 0, 2, 2, 3)
-        layout.addWidget(self.behaviourButtons, 7, 0, 1, 1)
+        layout.addLayout(videoLayout, 0, 0) # loading in the video
+        layout.addLayout(csvLayout, 1, 0) # loading in the csv
+        layout.addWidget(self.plotWidget, 6, 0, 1, 6) # plotting the csv
+        layout.addWidget(self.videoPlayer, 0, 2, 2, 3) # video player and buttons
+        layout.addWidget(self.behaviourButtons, 7, 0, 1, 1) # behaviour buttons
 
     def update_duration_label(self, duration):
         self.durationLabel.setText(f"Duration: {duration}")

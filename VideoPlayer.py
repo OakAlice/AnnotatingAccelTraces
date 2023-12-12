@@ -13,11 +13,17 @@ class VideoPlayer(QWidget):
     videoPlayed = pyqtSignal()
     videoPaused = pyqtSignal()
 
+    # Emits the relative change (i.e. not the new current video timestamp) in video, in milliseconds.
+    videoPositionChanged = pyqtSignal(int)
+
     def __init__(self):
         super().__init__()
 
         # Create a media player object
         self.player = QMediaPlayer()
+
+        # track separately from self.player so we can emit relative changes in `self.videoPositionChanged`.
+        self.current_video_timestamp = self.player.position()
 
         # Create a video display widget
         self.videoWidget = QVideoWidget()
@@ -64,6 +70,7 @@ class VideoPlayer(QWidget):
     def set_video(self, video_path): # load in the video
         url = QUrl.fromLocalFile(video_path)
         self.player.setSource(url)
+        self.current_video_timestamp = self.player.position()
 
     def play_video(self): # play
         self.player.play()
@@ -88,7 +95,10 @@ class VideoPlayer(QWidget):
         self.durationChanged.emit(duration_in_seconds) # emit the signal
 
     def position_changed(self, position):
+        self.videoPositionChanged.emit(position - self.current_video_timestamp)
+
         self.slider.setValue(position)
+        self.current_video_timestamp = position
 
     def set_position(self, position):
         self.player.setPosition(position)

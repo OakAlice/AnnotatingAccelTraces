@@ -3,6 +3,7 @@ from PyQt6.QtWidgets import QWidget, QSlider, QVBoxLayout, QHBoxLayout, QPushBut
 from PyQt6.QtCore import Qt
 from DisplayAccel import PlotWidget
 from VideoPlayer import VideoPlayer
+from BehaviourButtons import NewButton
 
 #from BehaviourButtons import BehaviourButtons
 
@@ -35,7 +36,7 @@ class LayoutManager(QWidget):
         self.videoPlayer = VideoPlayer()
 
         # Behaviour buttons
-        #self.behaviourButtons = BehaviourButtons()
+        self.behaviourButtons = NewButton()
 
         self.setupLayout()
 
@@ -78,6 +79,7 @@ class LayoutManager(QWidget):
         layout.addLayout(csvLayout, 1, 0)
         layout.addWidget(self.plotWidget, 6, 0, 1, 6)
         layout.addWidget(self.videoPlayer, 0, 2, 2, 3)
+        layout.addWidget(self.behaviourButtons, 7, 0, 1, 1)
 
     def update_duration_label(self, duration):
         self.durationLabel.setText(f"Duration: {duration}")

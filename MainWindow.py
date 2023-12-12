@@ -2,6 +2,7 @@ from PyQt6.QtWidgets import QMainWindow
 from LayoutManager import LayoutManager
 from OpenFiles import FileSelection, OpenFileSignals
 from DisplayAccel import read_and_process_csv
+from BehaviourButtons import NewButton
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -23,6 +24,9 @@ class MainWindow(QMainWindow):
         self.fileSelectionSignals = OpenFileSignals()
         self.openFiles = FileSelection(self.fileSelectionSignals)
 
+        #Initialise the new behaviour button
+        self.newButtonWidget = NewButton()
+
         # Connect signals to slots
         # Connect file loading buttons: when buttons are clicked, browse is opened and file name is extracted
         self.layoutManager.loadVidButton.clicked.connect(
@@ -43,6 +47,9 @@ class MainWindow(QMainWindow):
         self.layoutManager.videoFrameRate.valueChanged.connect(self.update_sync_factor)
         self.layoutManager.csvFrameRate.valueChanged.connect(self.update_sync_factor)
 
+        # connect the new behaviour button to making more buttons
+        self.newButtonWidget.newBehaviourAdded.connect(self.addBehaviourToLayout)
+
     # functions
     def load_csv_and_plot(self, csv_path): # load CSV data and update the plot widget
         df = read_and_process_csv(csv_path)
@@ -61,3 +68,7 @@ class MainWindow(QMainWindow):
 
     def on_video_pause(self):
         self.isPlaying = False
+
+    def addBehaviourToLayout(self, name, color):
+        new_behaviour_widget = self.layoutManager.behaviourButtons.addBehaviourButton(name, color)
+        self.layoutManager.addNewBehaviour(new_behaviour_widget)

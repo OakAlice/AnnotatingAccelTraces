@@ -12,7 +12,6 @@ class NewButton(QWidget):
         self.initUI()
        # self.newBehaviourAdded = pyqtSignal(str, QColor)  # Signal emitting
 
-
     def initUI(self):
         self.layout = QGridLayout(self)
 
@@ -30,8 +29,26 @@ class NewButton(QWidget):
 
     def addBehaviourButton(self, name, color):
         new_button = QRadioButton(name)
-        new_button.setStyleSheet(f"QRadioButton {{ color: {color.name()} }}")
-    
+        color_name = color.name()
+        
+        # Set the style sheet to include border and background color
+        new_button.setStyleSheet(f"""
+            QRadioButton {{
+                border: 2px solid {color_name};
+                border-radius: 5px;
+                padding: 3px;
+                background-color: {color_name};
+            }}
+            QRadioButton::indicator {{
+                background-color: white;
+                border: 1px solid {color_name};
+                border-radius: 6px;
+            }}
+            QRadioButton::indicator:checked {{
+                background-color: {color_name};
+            }}
+        """)
+
         row = self.buttonCount // 10  # Guess buttons per row
         col = self.buttonCount % 10
         self.layout.addWidget(new_button, row, col)

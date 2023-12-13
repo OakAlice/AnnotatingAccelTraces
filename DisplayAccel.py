@@ -49,6 +49,12 @@ class PlotWidget(QWidget):
         zoomLayout.addWidget(self.zoomOutButton)
         layout.addLayout(zoomLayout)
 
+        # Second scrollbar for controlling the vertical line
+        self.vline_scrollbar = QScrollBar(Qt.Orientation.Horizontal)
+        self.vline_scrollbar.valueChanged.connect(self.update_vline_position)
+        layout.addWidget(self.vline_scrollbar)  # Add it above or below the plot as desired
+
+
         layout.addWidget(self.scrollbar)
         self.setLayout(layout)
 
@@ -60,27 +66,31 @@ class PlotWidget(QWidget):
 
         self.fps = None
 
-        # self.fps_input = fps_input
-        # self.fps_input.connect(self.handle_change_in_fps)
         fps_input.connect(self.handle_change_in_fps)
 
+    # functions
+    # part one of converting the fps
     def handle_change_in_fps(self, new_fps: int):
         self.fps = new_fps
 
+    # how much to move the vline by
     def handle_change_in_video(self, relative_change_ms: int):
-        if self.fps is not None:
-            print(f"move my CSV {(relative_change_ms/1000.0)*self.fps} frames please")
+        if self.fps is not None and self.dataframe is not None:
+            frame_change = int((relative_change_ms / 1000.0) * self.fps)
+            new_index = min(max(0, self.vline_scrollbar.value() + frame_change), len(self.dataframe) - 1)
+            self.vline_scrollbar.setValue(new_index)
         else:
             print(f"My video has changed by {relative_change_ms} milliseconds")
 
-    # functions
     # load in the data, plot it
     def load_data(self, dataframe):
         self.dataframe = dataframe
         self.plot_data(0)
-        # Set scrollbar range
         self.scrollbar.setRange(0, len(dataframe) - 1)
-
+        self.vline_scrollbar.setRange(0, len(dataframe) - 1)
+        # Initialize the vertical line at the start of the plot
+        self.update_vline_position(0)
+        
     # the plot function specifically
     def plot_data(self, start_index):
         if self.dataframe is not None:
@@ -90,6 +100,10 @@ class PlotWidget(QWidget):
             self.ax.plot(self.dataframe.iloc[:, 0], self.dataframe.iloc[:, 2], color='green', linewidth=0.5)
             self.ax.plot(self.dataframe.iloc[:, 0], self.dataframe.iloc[:, 3], color='blue', linewidth=0.5)
             self.figure.subplots_adjust(left=0, right=1, top=1, bottom=0)
+            if not hasattr(self, 'vline'):
+                self.vline = self.ax.axvline(x=self.dataframe.iloc[0, 0], color='k', linestyle='--')  # Black dashed line
+            else:
+                self.update_vline_position(self.vline_scrollbar.value()) 
             self.canvas.draw()
 
     def zoom_in(self):
@@ -106,4 +120,16 @@ class PlotWidget(QWidget):
             start_index = max(0, value - int(window_size * self.zoom_level / 2))
             end_index = min(len(self.dataframe), start_index + int(window_size * self.zoom_level))
             self.ax.set_xlim(self.dataframe.iloc[start_index, 0], self.dataframe.iloc[end_index - 1, 0])
+            self.canvas.draw()
+
+    def update_vline(self, position):
+        if self.dataframe is not None and position < len(self.dataframe):
+            new_x = self.dataframe.iloc[position, 0]
+            self.vline.set_xdata([new_x, new_x])
+            self.canvas.draw()
+
+    def update_vline_position(self, value):
+        if self.dataframe is not None and 0 <= value < len(self.dataframe):
+            new_x = self.dataframe.iloc[value, 0]
+            self.vline.set_xdata([new_x, new_x])
             self.canvas.draw()

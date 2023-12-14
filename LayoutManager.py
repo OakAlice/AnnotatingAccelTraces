@@ -32,7 +32,7 @@ class LayoutManager(QWidget):
         # the video
         self.videoPlayer = VideoPlayer()
 
-        # plot the csv
+        # plot the csv # this is a duplication from the main window too
         self.plotWidget = PlotWidget(self.videoPlayer.videoPositionChanged, self.csvFrameRate.valueChanged)
 
         # Behaviour buttons

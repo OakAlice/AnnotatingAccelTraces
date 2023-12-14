@@ -7,6 +7,9 @@ from PyQt6.QtCore import pyqtSignal
 
 class NewButton(QWidget):
     newBehaviourAdded = pyqtSignal(str, QColor)  # Signal emitting
+    colourSelected = pyqtSignal(QColor) # emit the colour
+    nameSelected = pyqtSignal(str) # emit the name of the behaviour
+
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -48,6 +51,9 @@ class NewButton(QWidget):
                 background-color: {color_name};
             }}
         """)
+
+        # connect the signal with the slot
+        new_button.clicked.connect(lambda: self.colourSelected.emit(color))
 
         row = self.buttonCount // 10  # Guess buttons per row
         col = self.buttonCount % 10

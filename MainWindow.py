@@ -3,7 +3,7 @@ from PyQt6.QtCore import pyqtSignal
 from LayoutManager import LayoutManager
 from OpenFiles import FileSelection, OpenFileSignals
 from DisplayAccel import read_and_process_csv, PlotWidget
-from BehaviourButtons import NewButton
+from BehaviourButtons import ButtonGroup
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -26,10 +26,10 @@ class MainWindow(QMainWindow):
         self.openFiles = FileSelection(self.fileSelectionSignals)
 
         #Initialise the new behaviour button
-        self.newButtonWidget = NewButton()
+        self.newButtonWidget = ButtonGroup()
 
         # Initialise the csv plot and elements
-        self.plotWidget = PlotWidget(self.layoutManager.videoPlayer.videoPositionChanged, self.layoutManager.csvFrameRate.valueChanged)
+        # self.plotWidget = PlotWidget(self.layoutManager.videoPlayer.videoPositionChanged, self.layoutManager.csvFrameRate.valueChanged)
 
         # Connect signals to slots
         # Connect file loading buttons: when buttons are clicked, browse is opened and file name is extracted
@@ -55,7 +55,7 @@ class MainWindow(QMainWindow):
         self.newButtonWidget.newBehaviourAdded.connect(self.addBehaviourToLayout)
 
         # connect the selection of the behaviour button to colour the csv
-        self.newButtonWidget.colourSelected.connect(self.plotWidget.setBehaviourColor)
+        # self.newButtonWidget.colourSelected.connect(self.plotWidget.setBehaviourColor)
 
     # functions
     def load_csv_and_plot(self, csv_path): # load CSV data and update the plot widget

@@ -5,11 +5,10 @@ from PyQt6.QtCore import Qt
 from PyQt6.QtGui import QColor
 from PyQt6.QtCore import pyqtSignal
 
-class NewButton(QWidget):
-    newBehaviourAdded = pyqtSignal(str, QColor)  # Signal emitting
-    colourSelected = pyqtSignal(QColor) # emit the colour
-    nameSelected = pyqtSignal(str) # emit the name of the behaviour
-
+class ButtonGroup(QWidget):
+    newBehaviourAdded = pyqtSignal(str, QColor)
+    selectedBehaviourChanged = pyqtSignal(str, QColor)
+    
     def __init__(self):
         super().__init__()
         self.initUI()
@@ -53,7 +52,7 @@ class NewButton(QWidget):
         """)
 
         # connect the signal with the slot
-        new_button.clicked.connect(lambda: self.colourSelected.emit(color))
+        new_button.clicked.connect(lambda: self.selectedBehaviourChanged.emit(name, color))
 
         row = self.buttonCount // 10  # Guess buttons per row
         col = self.buttonCount % 10
@@ -95,6 +94,6 @@ class NewButtonDialog(QDialog):
 
 if __name__ == '__main__':
     app = QApplication([])
-    mainWin = NewButton()
+    mainWin = ButtonGroup()
     mainWin.show()
     app.exec()

@@ -1,3 +1,5 @@
+from matplotlib.backend_bases import MouseEvent
+from matplotlib.figure import Figure
 import matplotlib.pyplot as plt
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas, NavigationToolbar2QT as NavigationToolbar
 from PyQt6.QtWidgets import QPushButton, QScrollBar, QVBoxLayout, QWidget, QHBoxLayout
@@ -5,7 +7,7 @@ from PyQt6.QtCore import Qt
 import pandas as pd
 import pyqtgraph as pg
 from PyQt6.QtCore import QUrl, Qt, pyqtSignal
-from PyQt6.QtGui import QColor
+from PyQt6.QtGui import QColor, QMouseEvent
 from matplotlib.patches import Rectangle
 
 def read_and_process_csv(file_path):
@@ -14,15 +16,47 @@ def read_and_process_csv(file_path):
     df.iloc[:, 0] = time
     return df
 
+class FriendlyFigureCanvas(FigureCanvas):
+
+    # Directly pass up mouse events as signals.
+    mousePressEventSignal = pyqtSignal(QMouseEvent)
+    mouseMoveEventSignal = pyqtSignal(QMouseEvent)
+    mouseReleaseEventSignal = pyqtSignal(QMouseEvent)
+
+    def __init__(self, figure: Figure):
+        super().__init__(figure=figure)
+    
+    def mousePressEvent(self, event):
+        super().mousePressEvent(event)
+        self.mousePressEventSignal.emit(event)
+
+    def mouseMoveEvent(self, event):
+        super().mouseMoveEvent(event)
+        self.mouseMoveEventSignal.emit(event)
+
+    def mouseReleaseEvent(self, event):
+        super().mouseReleaseEvent(event)
+        self.mouseReleaseEventSignal.emit(event)
+
+
 class PlotWidget(QWidget):
-    def __init__(self, video_change_signal_ms: pyqtSignal, fps_input: pyqtSignal, parent=None):
+    def __init__(self, video_change_signal_ms: pyqtSignal, fps_input: pyqtSignal, current_behaviour_signal: pyqtSignal, parent=None):
+        """
+        Args:
+            video_change_signal_ms (pyqtSignal): Recieve messages that the video has changed (by a delta, not a new absolute position)
+            fps_input: (pyqtSignal): receive messages that the FPS of the video has changed
+            current_behaviour_signal (pyqtSignal): recieve messages that the user has selected a different behaviour to record.
+        """
         super().__init__(parent)
 
         self.selectedRegions = [] # itialise the coordinates selected
 
         self.figure, self.ax = plt.subplots(figsize=(5, 1))
-        self.canvas = FigureCanvas(self.figure)
+        self.canvas = FriendlyFigureCanvas(self.figure)
+        self.selectionRect = None
+
         self.currentColor = QColor()  # Default color
+        self.currentName = None
 
         # Initial plot setup to remove axis ticks and minimize margins
         self.ax.tick_params(axis='both', which='both', bottom=False, top=False, 
@@ -65,10 +99,24 @@ class PlotWidget(QWidget):
         # Connect signals to slots within PlotWidget
         self.video_change_single_ms = video_change_signal_ms
         self.video_change_single_ms.connect(self.handle_change_in_video)
-        
         self.fps = None
 
         fps_input.connect(self.handle_change_in_fps)
+
+        current_behaviour_signal.connect(self.update_behaviour)
+
+        # Connect up mouse events on the canvas to our class.
+        self.canvas.mouseMoveEventSignal.connect(self.canvasMouseMoveEvent)
+        self.canvas.mousePressEventSignal.connect(self.canvasMousePressEvent)
+        self.canvas.mouseReleaseEventSignal.connect(self.canvasMouseReleaseEvent)
+
+    def has_active_behaviour(self) -> bool:
+        return self.currentName is not None
+
+    def update_behaviour(self, name, colour):
+        self.currentColor = colour
+        self.currentName = name
+        print(f"New behaviour {self.currentName}")
 
     # functions
     # part one of converting the fps
@@ -92,6 +140,7 @@ class PlotWidget(QWidget):
         self.vline_scrollbar.setRange(0, len(dataframe) - 1)
         # Initialize the vertical line at the start of the plot
         self.update_vline_position(0)
+        print(f"Loaded in dataframe!")
 
     # the plot function specifically
     def plot_data(self, start_index):
@@ -136,48 +185,43 @@ class PlotWidget(QWidget):
             self.vline.set_xdata([new_x, new_x])
             self.canvas.draw()
 
-    def mousePressEvent(self, event):
-        if self.dataframe is not None:
-            # Convert pixel coordinates to data coordinates
-            ax = self.canvas.figure.gca()
-            xdata, _ = ax.transData.inverted().transform((event.pos().x(), event.pos().y()))
+    # working on the stuff under here
+
+    # if one of the NewButton is selected, then the next mousePressEvent, the drag, and
+    # the mouseReleaseEvent will select an area inside of the plotWidget
+
+    def canvasMousePressEvent(self, event):
+        if self.dataframe is not None and self.has_active_behaviour():
+            print(f"mouse press event", event.pos().x(), event.pos().y())
             
             # Initialize the selection rectangle
-            self.selectionRect = Rectangle((xdata, self.ax.get_ylim()[0]), 0, self.ax.get_ylim()[1], color=self.currentColor.name(), alpha=0.3)
+            self.selectionRect = Rectangle((event.pos().x(), event.pos().y()), 1, -100, color='black') #self.currentColor.name(), alpha=0.8)
             self.ax.add_patch(self.selectionRect)
             self.canvas.draw()
 
-    def mouseMoveEvent(self, event):
-        if self.dataframe is not None and self.selectionRect is not None:
-            # Convert pixel coordinates to data coordinates
-            ax = self.canvas.figure.gca()
-            xdata, _ = ax.transData.inverted().transform((event.pos().x(), event.pos().y()))
+    def canvasMouseMoveEvent(self, event):
+        if self.dataframe is not None and self.selectionRect is not None and self.has_active_behaviour():
+            self.selectionRect.set_width(event.pos().x() - self.selectionRect.get_x())
+            print(f"width={self.selectionRect.get_width()}")
             
-            # Update the width of the rectangle
-            new_width = xdata - self.selectionRect.get_x()
-            self.selectionRect.set_width(new_width)
             self.canvas.draw()
-
-    def mouseReleaseEvent(self, event):
-        if self.dataframe is not None and self.selectionRect is not None:
+            
+    def canvasMouseReleaseEvent(self, event):
+        if self.dataframe is not None and self.selectionRect is not None and self.has_active_behaviour():
             # Convert pixel coordinates to data coordinates
-            ax = self.canvas.figure.gca()
-            xdata, _ = ax.transData.inverted().transform((event.pos().x(), event.pos().y()))
-
-            # Calculate the final width of the selection rectangle
-            final_width = xdata - self.selectionRect.get_x()
-            self.selectionRect.set_width(final_width)
+            print("mouse release event",  event.pos().x(), event.pos().y())
+            self.selectionRect.set_width(event.pos().x() - self.selectionRect.get_x())
 
             # Store the selected region
             start = self.selectionRect.get_x()
-            end = start + final_width
-            self.selectedRegions.append((start, end))
+            end = start + self.selectionRect.get_width()
+            print(f"New region saved: {(start, end)}")
 
-            # Color the region (optional: remove the selection rectangle)
+            # TODO: This is just the relative position within the frame. We need to take into account the shift of the dataframe
+            #  i.e. start and end are just relative to the canvas, not the CSV.
+            self.selectedRegions.append((start, end))
             self.colorRegion(start, end)
             self.selectionRect = None
-
-            # Redraw the canvas
             self.canvas.draw()
 
     def colorRegion(self, start, end):

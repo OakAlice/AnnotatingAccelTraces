@@ -36,8 +36,9 @@ class LayoutManager(QWidget):
         # plot the csv # this is a duplication from the main window too
         self.behaviourButtons = ButtonGroup()
 
-
         self.plotWidget = JackPlotWidget() # self.videoPlayer.videoPositionChanged, self.csvFrameRate.valueChanged, self.behaviourButtons.selectedBehaviourChanged)
+        self.behaviourButtons.newBehaviourAdded.connect(lambda name, colour: self.plotWidget.add_behaviour(name, colour))
+        self.behaviourButtons.selectedBehaviourChanged.connect(lambda name, colour: self.plotWidget.set_active_behaviour(name, colour))
 
         self.setupLayout()
 

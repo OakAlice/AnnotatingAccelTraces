@@ -72,12 +72,25 @@ class JackPlotWidget(QWidget):
         self.setLayout(self.layout)
 
         
-        self.behaviours: List[Behaviour] = DEFAULT_BEHAVIOURS
+        self.behaviours: List[Behaviour] = [] # DEFAULT_BEHAVIOURS
         self.current_idx = -1 if len(self.behaviours) == 0 else 0
 
         self.current_bounding_box: List[int, int] = [-1, -1]
         self.behaviour_segments: Dict[Behaviour, List[List[int, int]]] = defaultdict(list)
 
+
+    def add_behaviour(self, name: str, colour: QColor):
+        self.behaviours.append(Behaviour(title=name, colour=colour.name()))
+
+    def set_active_behaviour(self, name: str, colour: QColor) -> bool:
+        matching = list(filter(lambda b: b[1].title == name, enumerate(self.behaviours)))
+        if len(matching) == 1:
+            self.current_idx = matching[0][0]
+            return True
+        elif len(matching) == 0:
+            self.add_behaviour(name, colour)
+            return self.set_active_behaviour(name, colour)
+        return False
 
     def update_start_idx(self, idx: int):
         print(f"self.start_idx = {self.start_idx}")
@@ -147,14 +160,15 @@ class JackPlotWidget(QWidget):
     def add_all_patches(self):
         b = self.behaviours[self.current_idx]
         patches = self.behaviour_segments[b]
-        for p in patches:
-            x0, x1 = p
-            
-            # Only add patches that are now visibly in frame.
-            if self.dataframe_x_in_view(x0) and self.dataframe_x_in_view(x1):
-                rect: Rectangle = self.segment_to_canvas_rectange(p[0], p[1])
-                rect.set_color(b.colour)
-                self.ax.add_patch(rect)
+        for behavior, patches in self.behaviour_segments.items():
+            for p in patches:
+                x0, x1 = p
+                
+                # Only add patches that are now visibly in frame.
+                if self.dataframe_x_in_view(x0) and self.dataframe_x_in_view(x1):
+                    rect: Rectangle = self.segment_to_canvas_rectange(p[0], p[1])
+                    rect.set_color(behavior.colour)
+                    self.ax.add_patch(rect)
 
     def get_relative_mouse_position(self, event: MouseEvent) -> Tuple[float, float]:
         """
@@ -180,7 +194,6 @@ class JackPlotWidget(QWidget):
     def segment_to_canvas_rectange(self, a: float, b: float) -> Rectangle:
         x0, x1 = self.convert_segment_to_canvas(a, b)
         return Rectangle([a, 0], b-a, 4)
-        # return Rectangle([x0, 0], x1-x0, 100)
 
     def convert_segment_to_canvas(self, a: float, b:float) -> Tuple[float, float]:
         return [(self.canvas.width() * (x -self.start_idx)) /self.hardcoded_dataframe_samples for x in [a, b]] 

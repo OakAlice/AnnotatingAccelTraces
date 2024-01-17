@@ -19,7 +19,7 @@ from PyQt6.QtWidgets import QPushButton, QScrollBar, QVBoxLayout, QWidget, QHBox
 from PyQt6.QtCore import Qt, QThread
 from matplotlib.figure import Figure
 
-from canvas import FriendlyFigureCanvas
+from DisplayAccel import FriendlyFigureCanvas
 
 def read_and_process_csv(file_path):
     df = pd.read_csv(file_path)
@@ -38,7 +38,7 @@ class Behaviour:
 
 DEFAULT_BEHAVIOURS = [Behaviour("sitting", "blue"), Behaviour("walking", "green")]
 
-class PlotWidget(QWidget):
+class JackPlotWidget(QWidget):
 
     start_index_signal = pyqtSignal(int)
 
@@ -199,7 +199,7 @@ class Worker(QThread):
 
 if __name__ == '__main__':
     app = QApplication(sys.argv)
-    window = PlotWidget()
+    window = JackPlotWidget()
 
     # Simulate a signal to continuous update the starting index of PlotWidget
     worker = Worker()

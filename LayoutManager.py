@@ -4,6 +4,7 @@ from PyQt6.QtCore import Qt
 from DisplayAccel import PlotWidget
 from VideoPlayer import VideoPlayer
 from BehaviourButtons import ButtonGroup
+from jack import JackPlotWidget
 
 #from BehaviourButtons import BehaviourButtons
 
@@ -35,7 +36,8 @@ class LayoutManager(QWidget):
         # plot the csv # this is a duplication from the main window too
         self.behaviourButtons = ButtonGroup()
 
-        self.plotWidget = PlotWidget(self.videoPlayer.videoPositionChanged, self.csvFrameRate.valueChanged, self.behaviourButtons.selectedBehaviourChanged)
+
+        self.plotWidget = JackPlotWidget() # self.videoPlayer.videoPositionChanged, self.csvFrameRate.valueChanged, self.behaviourButtons.selectedBehaviourChanged)
 
         self.setupLayout()
 

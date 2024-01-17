@@ -68,22 +68,22 @@ class PlotWidget(QWidget):
         # self.scrollbar.valueChanged.connect(self.update_plot)
 
         # Zoom Buttons
-        # self.zoomInButton = QPushButton("+", self)
-        # self.zoomOutButton = QPushButton("-", self)
-        # self.zoomInButton.clicked.connect(self.zoom_in)
-        # self.zoomOutButton.clicked.connect(self.zoom_out)
-        # self.zoomInButton.setFixedSize(30, 30)
-        # self.zoomOutButton.setFixedSize(30, 30)
+        #self.zoomInButton = QPushButton("+", self)
+        #self.zoomOutButton = QPushButton("-", self)
+        #self.zoomInButton.clicked.connect(self.zoom_in)
+        #self.zoomOutButton.clicked.connect(self.zoom_out)
+        #self.zoomInButton.setFixedSize(30, 30)
+        #self.zoomOutButton.setFixedSize(30, 30)
 
         # Layout
         layout = QVBoxLayout()
         layout.addWidget(self.canvas)
 
         # Zoom buttons layout
-        # zoomLayout = QHBoxLayout()
-        # zoomLayout.addWidget(self.zoomInButton)
-        # zoomLayout.addWidget(self.zoomOutButton)
-        # layout.addLayout(zoomLayout)
+        #zoomLayout = QHBoxLayout()
+        #zoomLayout.addWidget(self.zoomInButton)
+        #zoomLayout.addWidget(self.zoomOutButton)
+        #layout.addLayout(zoomLayout)
 
         # Second scrollbar for controlling the vertical line # functional
         # self.vline_scrollbar = QScrollBar(Qt.Orientation.Horizontal)

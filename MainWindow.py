@@ -4,6 +4,7 @@ from LayoutManager import LayoutManager
 from OpenFiles import FileSelection, OpenFileSignals
 from DisplayAccel import read_and_process_csv, PlotWidget
 from BehaviourButtons import ButtonGroup
+from jack import FriendlyFigureCanvas
 
 class MainWindow(QMainWindow):
     def __init__(self):
@@ -29,7 +30,7 @@ class MainWindow(QMainWindow):
         self.newButtonWidget = ButtonGroup()
 
         # Initialise the csv plot and elements
-        # self.plotWidget = PlotWidget(self.layoutManager.videoPlayer.videoPositionChanged, self.layoutManager.csvFrameRate.valueChanged)
+        self.plotWidget = PlotWidget(self.layoutManager.videoPlayer.videoPositionChanged, self.layoutManager.csvFrameRate.valueChanged)
 
         # Connect signals to slots
         # Connect file loading buttons: when buttons are clicked, browse is opened and file name is extracted

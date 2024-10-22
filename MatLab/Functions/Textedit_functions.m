@@ -126,7 +126,7 @@ function current_frame_Callback(hObject, eventdata, handles)
     end
 
     guidata(hObject, handles);
-    mydisplay(hObject, eventdata, handles);  % Call display function to update the UI
+    display_video_fun(hObject, eventdata, handles);  % Call display function to update the UI
 end
 
 

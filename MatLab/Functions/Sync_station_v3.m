@@ -5,8 +5,8 @@ function varargout = Sync_station_v3(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @Sync_station_v3_OpeningFcn, ...
-                   'gui_OutputFcn',  @Sync_station_v3_OutputFcn, ...
+                   'gui_OpeningFcn', @initialise_gui_fun, ...
+                   'gui_OutputFcn',  @print_to_terminal_fun, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -22,8 +22,8 @@ end
 
 
 % --- Executes just before Sync_station_v3 is made visible.
-function Sync_station_v3_OpeningFcn(hObject, eventdata, handles, varargin)
-% Sync_station_v3_OpeningFcn: Initializes the GUI when it is first opened.
+function initialise_gui_fun(hObject, eventdata, handles, varargin)
+% initialise_gui_fun: Initializes the GUI when it is first opened.
 %
 % Inputs:
 %   - hObject: Handle to the GUI figure (main window).
@@ -42,8 +42,8 @@ function Sync_station_v3_OpeningFcn(hObject, eventdata, handles, varargin)
 end
 
 % --- Outputs from this function are returned to the command line.
-function varargout = Sync_station_v3_OutputFcn(hObject, eventdata, handles)
-% Sync_station_v3_OutputFcn: Returns the output when the GUI is executed.
+function varargout = print_to_terminal_fun(hObject, eventdata, handles)
+% print_to_terminal_fun: Returns the output when the GUI is executed.
 %
 % Inputs:
 %   - hObject: Handle to the GUI figure.

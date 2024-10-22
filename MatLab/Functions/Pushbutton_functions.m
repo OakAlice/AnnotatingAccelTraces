@@ -59,7 +59,7 @@ function load_video_button_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
     
     % Call the display function to show the first frame of the video
-    mydisplay(hObject, eventdata, handles);
+    display_video_fun(hObject, eventdata, handles);
 end
 
 
@@ -145,8 +145,8 @@ function load_accel_button_Callback(hObject, eventdata, handles)
 
     %% Update displays with the loaded accelerometer data
     % Call the functions to update accelerometer display on the GUI
-    mydisplay2(hObject, eventdata, handles);
-    mydisplay3(hObject, eventdata, handles);
+    display_large_accel_fun(hObject, eventdata, handles);
+    display_small_accel_fun(hObject, eventdata, handles);
 end
 
 % --- Executes on button press in play_button.
@@ -178,9 +178,9 @@ function play_button_Callback(hObject, eventdata, handles)
         end
 
         % Update the display with the new frame
-        mydisplay(hObject, eventdata, handles);
-        mydisplay2(hObject, eventdata, handles);
-        mydisplay3(hObject, eventdata, handles);
+        display_video_fun(hObject, eventdata, handles);
+        display_large_accel_fun(hObject, eventdata, handles);
+        display_small_accel_fun(hObject, eventdata, handles);
     end  
 end  
 
@@ -221,7 +221,7 @@ function delay_calculation_button_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
 
     % Update display with the new delay information
-    mydisplay2(hObject, eventdata, handles);
+    display_large_accel_fun(hObject, eventdata, handles);
 end
 
 
@@ -262,7 +262,7 @@ function zoom_trigger_button_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
     
     % Update the display for zooming effect
-    mydisplay2(hObject, eventdata, handles);
+    display_large_accel_fun(hObject, eventdata, handles);
 end
 
 % --- Executes on button press in load_behaviours_button.
@@ -323,7 +323,7 @@ function annotation_trigger_button_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
     
     % Update the display to reflect tagged behaviors
-    mydisplay3(hObject, eventdata, handles);
+    display_small_accel_fun(hObject, eventdata, handles);
 end
 
 
@@ -370,8 +370,8 @@ function zoom_toggle_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
 
     % Update display for zoomed view
-    mydisplay2(hObject, eventdata, handles);
+    display_large_accel_fun(hObject, eventdata, handles);
     
     % Update any additional displays or components affected by zoom
-    mydisplay3(hObject, eventdata, handles);
+    display_small_accel_fun(hObject, eventdata, handles);
 end

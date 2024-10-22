@@ -13,8 +13,8 @@ function varargout = Sync_station_v2(varargin)
 gui_Singleton = 1;
 gui_State = struct('gui_Name',       mfilename, ...
                    'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @Sync_station_v2_OpeningFcn, ...
-                   'gui_OutputFcn',  @Sync_station_v2_OutputFcn, ...
+                   'gui_OpeningFcn', @initialise_gui_fun, ...
+                   'gui_OutputFcn',  @print_to_terminal_fun, ...
                    'gui_LayoutFcn',  [] , ...
                    'gui_Callback',   []);
 if nargin && ischar(varargin{1})
@@ -30,7 +30,7 @@ end
 
 
 % --- Executes just before Sync_station_v2 is made visible.
-function Sync_station_v2_OpeningFcn(hObject, eventdata, handles, varargin)
+function initialise_gui_fun(hObject, eventdata, handles, varargin)
 % This function has no output args, see OutputFcn.
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -48,7 +48,7 @@ guidata(hObject, handles);
 
 
 % --- Outputs from this function are returned to the command line.
-function varargout = Sync_station_v2_OutputFcn(hObject, eventdata, handles) 
+function varargout = print_to_terminal_fun(hObject, eventdata, handles) 
 % varargout  cell array for returning output args (see VARARGOUT);
 % hObject    handle to figure
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -59,8 +59,8 @@ varargout{1} = handles.output;
 
 
 
-
-function mydisplay(hObject, eventdata, handles)
+% --- Function for displaying the video
+function display_video_fun(hObject, eventdata, handles)
 % main update screen function
 
 %handles.frame=round(get(handles.slider_frames,'Value'));
@@ -93,7 +93,7 @@ end
 guidata(hObject,handles)
 
 % function for displaying the acclerometer
-function mydisplay2(hObject, eventdata, handles)
+function display_large_accel_fun(hObject, eventdata, handles)
 
 axes(handles.large_accelerometer_display)
 
@@ -134,7 +134,7 @@ end
 guidata(hObject,handles)
 
 % function for displaying the acclerometer
-function mydisplay3(hObject, eventdata, handles)
+function display_small_accel_fun(hObject, eventdata, handles)
 
 axes(handles.small_accelerometer_display)
 
@@ -190,7 +190,7 @@ handles.rect=[];
 handles.stop=0;
 
 guidata(hObject, handles);
-mydisplay(hObject, eventdata, handles)
+display_video_fun(hObject, eventdata, handles)
 
 
 function load_accel_button_Callback(hObject, eventdata, handles)
@@ -263,8 +263,8 @@ handles.behaviours=zeros(length(accel_chunk(:,1)),1);
 
 
 guidata(hObject,handles)
-mydisplay2(hObject, eventdata, handles)
-mydisplay3(hObject, eventdata, handles)
+display_large_accel_fun(hObject, eventdata, handles)
+display_small_accel_fun(hObject, eventdata, handles)
 
 % --- Executes on button press in play_button.
 function play_button_Callback(hObject, eventdata, handles)
@@ -302,9 +302,9 @@ while(1)
          break;
     end
     
-    mydisplay(hObject, eventdata, handles)
-    mydisplay2(hObject, eventdata, handles)
-    mydisplay3(hObject, eventdata, handles)
+    display_video_fun(hObject, eventdata, handles)
+    display_large_accel_fun(hObject, eventdata, handles)
+    display_small_accel_fun(hObject, eventdata, handles)
 end  
     
 % --- Executes on button press in stop_button.
@@ -337,8 +337,8 @@ samplingF=str2double(get(handles.set_accel_frame_rate, 'String'));
 handles.Cfact=samplingF/framerate;
 
 
-%currently this doesn't work in zoom mode. 
-%would need to have an IF loop maybe? 
+% currently this doesnt work in zoom mode. 
+% need to fix this section (TODO)
 
 if get(handles.zoom_toggle, 'Value')==0
     %delay=str2double(get(handles.delay_text,'String'));
@@ -361,7 +361,7 @@ end
     
 %set(handles.delay_text,'String',num2str(time_sec-xmin1))
 guidata(hObject, handles);
-mydisplay2(hObject, eventdata, handles)
+display_large_accel_fun(hObject, eventdata, handles)
 
 % --- Executes on button press in zoom_trigger_button.
 function zoom_trigger_button_Callback(hObject, eventdata, handles)
@@ -388,11 +388,11 @@ xmax1=xmax(1);
 set(handles.zoom_toggle,'Value',1)                
                 
 %set the start and end points to zoom into. This will be read by the
-%mydisplay2 function when the zoom radio button is checked. 
+%display_large_accel_fun function when the zoom radio button is checked. 
 handles.start_zoom=xmin1;
 handles.end_zoom=xmax1;
 guidata(hObject, handles);
-mydisplay2(hObject, eventdata, handles)
+display_large_accel_fun(hObject, eventdata, handles)
 
 % --- Executes on button press in load_behaviours_button.
 function load_behaviours_button_Callback(hObject, eventdata, handles)
@@ -446,7 +446,7 @@ else
 end
 
 guidata(hObject,handles)
-mydisplay3(hObject, eventdata, handles)
+display_small_accel_fun(hObject, eventdata, handles)
 
 
 
@@ -516,8 +516,8 @@ fprintf('finished writing accel file\n')
 % --- Executes on button press in zoom_toggle.
 function zoom_toggle_Callback(hObject, eventdata, handles)
 guidata(hObject,handles)
-mydisplay2(hObject, eventdata, handles)
-mydisplay3(hObject, eventdata, handles)
+display_large_accel_fun(hObject, eventdata, handles)
+display_small_accel_fun(hObject, eventdata, handles)
 
 % hObject    handle to zoom_toggle (see GCBO)
 % eventdata  reserved - to be defined in a future version of MATLAB
@@ -546,9 +546,9 @@ set(handles.video_slider,'Value',handles.frame);
 set(handles.current_frame,'String',num2str(handles.frame));
 
 guidata(hObject,handles);
-mydisplay(hObject, eventdata, handles);
-mydisplay2(hObject, eventdata, handles);
-mydisplay3(hObject, eventdata, handles)
+display_video_fun(hObject, eventdata, handles);
+display_large_accel_fun(hObject, eventdata, handles);
+display_small_accel_fun(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
 function video_slider_CreateFcn(hObject, eventdata, handles)
@@ -657,7 +657,7 @@ function current_frame_Callback(hObject, eventdata, handles)
 
 handles.frame=str2double(get(handles.current_frame, 'String'));
 guidata(hObject, handles);
-mydisplay(hObject, eventdata, handles)
+display_video_fun(hObject, eventdata, handles)
 
 % --- Executes during object creation, after setting all properties.
 function current_frame_CreateFcn(hObject, eventdata, handles)

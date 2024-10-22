@@ -1,7 +1,7 @@
 %% functions for displaying the accelerometer in the gui
 
-function mydisplay(hObject, eventdata, handles)
-% mydisplay: Main function to update the display with the current video frame.
+function display_video_fun(hObject, eventdata, handles)
+% display_video_fun: Main function to update the display with the current video frame.
 % This function updates the GUIs axes to show the current video frame 
 % based on the selected frame number and video file type.
 %
@@ -38,8 +38,8 @@ function mydisplay(hObject, eventdata, handles)
 end
 
 % Function for displaying the smaller accelerometer screen
-function mydisplay2(hObject, eventdata, handles)
-% mydisplay2: Displays accelerometer data in the GUI, with options for zoom and axis coloring.
+function display_large_accel_fun(hObject, eventdata, handles)
+% display_large_accel_fun: Displays accelerometer data in the GUI, with options for zoom and axis coloring.
 %
 % Inputs:
 %   - hObject: Handle to the calling object (typically the GUI figure).
@@ -95,8 +95,8 @@ end
 
 
 % Function for displaying accelerometer data along with behaviors on small_accelerometer_display
-function mydisplay3(hObject, eventdata, handles)
-% mydisplay3: Displays accelerometer data and behavioral annotations in the GUI.
+function display_small_accel_fun(hObject, eventdata, handles)
+% display_small_accel_fun: Displays accelerometer data and behavioral annotations in the GUI.
 %
 % Inputs:
 %   - hObject: Handle to the calling object (typically the GUI figure).

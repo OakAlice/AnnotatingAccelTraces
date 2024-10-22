@@ -1,42 +1,5 @@
 %% functions for displaying the accelerometer in the gui
 
-function display_video_fun(hObject, eventdata, handles)
-% display_video_fun: Main function to update the display with the current video frame.
-% This function updates the GUIs axes to show the current video frame 
-% based on the selected frame number and video file type.
-%
-% Inputs:
-%   - hObject: Handle to the calling object (typically the GUI figure).
-%   - eventdata: Reserved for future use (automatically passed by MATLAB).
-%   - handles: Structure containing GUI handles and user data.
-
-    % Set the target axes for displaying the video frame
-    axes(handles.video_display);
-
-    %% Check if video file is loaded
-    if ~isempty(handles.videofile)
-        
-        % Check if the video file extension is supported
-        if any(strcmpi(handles.ext, {'.avi', '.mp4', '.mpg', '.mov'}))
-            % Read the frame at the current position
-            mov = read(handles.video, handles.frame);
-            
-            % Optional: Apply transformations like rotation and adjustments (currently commented out)
-            % mov = imrotate(mov, angle);              % Rotate frame (angle is specified by user)
-            % mov = imadjust(mov, [low_in; high_in], [0; 1], gamma); % Adjust contrast, brightness, gamma
-
-            % Display the frame in the axes
-            imshow(mov);
-
-            % Pause to simulate video playback at the correct framerate
-            pause(1 / handles.framerate);
-        end
-    end
-
-    % Save the updated handles structure (to preserve changes made in the function)
-    guidata(hObject, handles);
-end
-
 % Function for displaying the smaller accelerometer screen
 function display_large_accel_fun(hObject, eventdata, handles)
 % display_large_accel_fun: Displays accelerometer data in the GUI, with options for zoom and axis coloring.
@@ -137,5 +100,41 @@ function display_small_accel_fun(hObject, eventdata, handles)
 
     % Update the handles structure with the new data
     guidata(hObject, handles);
+end
+
+
+% --- Executes on button press in zoom_trigger_button.
+function zoom_trigger_button_Callback(hObject, eventdata, handles)
+    % Initialize variables
+    xmin = [];
+    xmax = [];
+    xmin1 = [];
+    xmax1 = [];
+    
+    % Get two points from user input using ginput
+    [x, y] = ginput(2);
+    xmin1 = round(x(1));  % Round first x-coordinate
+    xmax1 = round(x(2));  % Round second x-coordinate
+
+    % Ensure the coordinates are valid
+    xmin1 = max(1, xmin1);  % Minimum value should be at least 1
+    if xmin1 > xmax1
+        % Swap if the start point is greater than the end point
+        xmax1 = xmin1; 
+        xmin1 = xmax1;
+    end
+
+    % Set the zoom radio button to checked
+    set(handles.zoom_toggle, 'Value', 1);                
+    
+    % Set the start and end points for zoom
+    handles.start_zoom = xmin1;
+    handles.end_zoom = xmax1;
+
+    % Save updated handles structure
+    guidata(hObject, handles);
+    
+    % Update the display for zooming effect
+    display_large_accel_fun(hObject, eventdata, handles);
 end
 

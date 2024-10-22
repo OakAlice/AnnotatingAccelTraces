@@ -1,10 +1,10 @@
 
 %PUSH BUTTON functions
 
-% --- Executes on button press in pushbutton1_video.
+% --- Executes on button press in load_video_button.
 % Callback function for the 'Video' button. This function allows the user
 % to select a video file and initializes video playback parameters.
-function pushbutton1_video_Callback(hObject, eventdata, handles)
+function load_video_button_Callback(hObject, eventdata, handles)
     % Open a file selection dialog for video or image files
     [handles.videofilename, handles.pathname] = uigetfile(...
         {'*.MOV;*.avi;*.MP4;*.seq', 'Video files'; '*.tif;*.jpg;*.bmp', 'Image files'}, 'Pick a file');
@@ -38,17 +38,17 @@ function pushbutton1_video_Callback(hObject, eventdata, handles)
     handles.framerate = video.FrameRate;
     
     % Update the GUI to show the frame rate
-    set(handles.edit4_getframe, 'String', handles.framerate);
+    set(handles.vid_frame_rate_text, 'String', handles.framerate);
     
     % Initialize the video slider
-    set(handles.slider1, 'max', handles.totalframes, 'min', 1, 'Value', 1);
-    set(handles.slider1, 'SliderStep', [1 / handles.totalframes, 10 / handles.totalframes]);
+    set(handles.video_slider, 'max', handles.totalframes, 'min', 1, 'Value', 1);
+    set(handles.video_slider, 'SliderStep', [1 / handles.totalframes, 10 / handles.totalframes]);
     
     % Set the current frame number in the GUI to 1
-    set(handles.edit_framenum, 'String', '1');
+    set(handles.current_frame, 'String', '1');
     
     % Update the GUI to display the video file name
-    set(handles.edit1, 'String', handles.videofilename);
+    set(handles.video_name_text, 'String', handles.videofilename);
     
     % Initialize the first frame and other control variables
     handles.frame = 1;
@@ -64,17 +64,17 @@ end
 
 
 
-% --- Executes on button press in pushbutton2_accel.
+% --- Executes on button press in load_accel_button.
 % Callback function to synchronize accelerometer data with video
-function pushbutton2_accel_Callback(hObject, eventdata, handles)
+function load_accel_button_Callback(hObject, eventdata, handles)
 
     % Reset delay and zoom settings in the GUI
-    set(handles.edit_delay, 'String', '0');
-    set(handles.radiobutton1_zoom, 'Value', 0);
+    set(handles.delay_text, 'String', '0');
+    set(handles.zoom_toggle, 'Value', 0);
 
     %% Calculate video start and end time
     % Get the video end time from the GUI
-    videoendtime = get(handles.edit_acceldate, 'String');
+    videoendtime = get(handles.set_accel_start_datetime, 'String');
     
     % Convert the video end time string to a datetime format
     DateNumber = datetime(videoendtime);
@@ -109,12 +109,12 @@ function pushbutton2_accel_Callback(hObject, eventdata, handles)
 
     % Calculate the ending index for the accelerometer data based on the video duration
     end_vid = round(start + (handles.totalframes * (1 / handles.framerate)) / ...
-                    (1 / str2double(get(handles.edit_accelrate, 'String'))));
+                    (1 / str2double(get(handles.set_accel_frame_rate, 'String'))));
 
     %% Apply buffer to the start and end indices to account for any drift or inaccuracies
     % Add buffer (pre and post) to the calculated start and end indices
-    start_buffer = start - str2double(get(handles.edit3_buffer, 'String'));
-    end_buffer = round(end_vid + str2double(get(handles.edit3_buffer, 'String')));
+    start_buffer = start - str2double(get(handles.set_buffer, 'String'));
+    end_buffer = round(end_vid + str2double(get(handles.set_buffer, 'String')));
 
     % Ensure that the start buffer is not negative (prevents out-of-bounds indexing)
     if start_buffer < 0
@@ -134,7 +134,7 @@ function pushbutton2_accel_Callback(hObject, eventdata, handles)
     handles.accel_chunk = accel_chunk;
 
     % Update the GUI with the start timestamp of the loaded accelerometer data
-    set(handles.edit2, 'String', datestr(accel_chunk(1, 1)));
+    set(handles.accel_name_text, 'String', datestr(accel_chunk(1, 1)));
 
     %% Initialize a behaviors vector
     % Create a vector of zeros to represent behaviors (length equal to accelerometer data)
@@ -149,16 +149,16 @@ function pushbutton2_accel_Callback(hObject, eventdata, handles)
     mydisplay3(hObject, eventdata, handles);
 end
 
-% --- Executes on button press in pushbutton3_forward.
-function pushbutton3_forward_Callback(hObject, eventdata, handles)
+% --- Executes on button press in play_button.
+function play_button_Callback(hObject, eventdata, handles)
     global stop
     stop = true;  % Initialize the stop flag
 
     handles.stop = 0;  % Reset the stop flag in handles
 
     % Get the frame step and current frame number from the GUI
-    step = str2double(get(handles.edit5_frame_step, 'String'));
-    handles.frame = str2double(get(handles.edit_framenum, 'String'));
+    step = str2double(get(handles.set_frame_step_value, 'String'));
+    handles.frame = str2double(get(handles.current_frame, 'String'));
 
     % Start an infinite loop for frame advancement
     while true
@@ -169,8 +169,8 @@ function pushbutton3_forward_Callback(hObject, eventdata, handles)
 
         % Advance to the next frame
         handles.frame = handles.frame + step;
-        set(handles.slider1, 'Value', handles.frame);
-        set(handles.edit_framenum, 'String', num2str(handles.frame));
+        set(handles.video_slider, 'Value', handles.frame);
+        set(handles.current_frame, 'String', num2str(handles.frame));
 
         % Break if the frame exceeds the total number of frames
         if handles.frame > handles.totalframes
@@ -184,16 +184,16 @@ function pushbutton3_forward_Callback(hObject, eventdata, handles)
     end  
 end  
 
-% --- Executes on button press in pushbutton4_stop.
-function pushbutton4_stop_Callback(hObject, eventdata, handles)
+% --- Executes on button press in stop_button.
+function stop_button_Callback(hObject, eventdata, handles)
     global stop
     stop = false;  % Set the stop flag to false
     % Optionally, you can add feedback to the user that stopping was pressed
     % disp('You pressed stop');
 end
 
-% --- Executes on button press in pushbutton_setdelay.
-function pushbutton_setdelay_Callback(hObject, eventdata, handles)
+% --- Executes on button press in delay_calculation_button.
+function delay_calculation_button_Callback(hObject, eventdata, handles)
     % Get the cursor position from the user
     [x, y] = ginput(1);
     
@@ -201,20 +201,20 @@ function pushbutton_setdelay_Callback(hObject, eventdata, handles)
     xmin1 = max(1, round(x(1)));
 
     % Get frame rate and sampling frequency from the GUI
-    framerate = str2double(get(handles.edit4_getframe, 'String'));
-    samplingF = str2double(get(handles.edit_accelrate, 'String'));
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String'));
     handles.Cfact = samplingF / framerate;  % Calculate conversion factor
 
     % Check if in zoom mode
-    if get(handles.radiobutton1_zoom, 'Value') == 0
+    if get(handles.zoom_toggle, 'Value') == 0
         % Calculate the delay based on current frame and cursor position
         time_sec = round(handles.frame * handles.Cfact + handles.start);
-        set(handles.edit_delay, 'String', num2str(time_sec - xmin1));
+        set(handles.delay_text, 'String', num2str(time_sec - xmin1));
     else
         % If in zoom mode, calculate the new delay considering zoom offsets
         time_sec = round(handles.frame * handles.Cfact + handles.start);
         new_delay = round(time_sec - (handles.start_zoom + xmin1));
-        set(handles.edit_delay, 'String', num2str(new_delay));
+        set(handles.delay_text, 'String', num2str(new_delay));
     end
 
     % Save updated handles structure
@@ -230,8 +230,8 @@ end
 
 
 
-% --- Executes on button press in pushbutton_zoom.
-function pushbutton_zoom_Callback(hObject, eventdata, handles)
+% --- Executes on button press in zoom_trigger_button.
+function zoom_trigger_button_Callback(hObject, eventdata, handles)
     % Initialize variables
     xmin = [];
     xmax = [];
@@ -252,7 +252,7 @@ function pushbutton_zoom_Callback(hObject, eventdata, handles)
     end
 
     % Set the zoom radio button to checked
-    set(handles.radiobutton1_zoom, 'Value', 1);                
+    set(handles.zoom_toggle, 'Value', 1);                
     
     % Set the start and end points for zoom
     handles.start_zoom = xmin1;
@@ -265,8 +265,8 @@ function pushbutton_zoom_Callback(hObject, eventdata, handles)
     mydisplay2(hObject, eventdata, handles);
 end
 
-% --- Executes on button press in pushbutton7.
-function pushbutton7_Callback(hObject, eventdata, handles)
+% --- Executes on button press in load_behaviours_button.
+function load_behaviours_button_Callback(hObject, eventdata, handles)
     % Load behaviors from a CSV file
     [handles.behaviourfilename, handles.pathname] = uigetfile('*.csv*', 'Pick file');
     if isequal(handles.behaviourfilename, 0)
@@ -279,17 +279,17 @@ function pushbutton7_Callback(hObject, eventdata, handles)
     handles.beh = readtable(handles.behfile);
     
     % Display the behaviors in the uitable
-    set(handles.uitable1, 'Data', table2cell(handles.beh));
-    set(handles.uitable1, 'ColumnName', {'Number', 'Behaviour'});
+    set(handles.behaviours_table, 'Data', table2cell(handles.beh));
+    set(handles.behaviours_table, 'ColumnName', {'Number', 'Behaviour'});
     
     % Save updated handles structure
     guidata(hObject, handles);
 end
 
-% --- Executes on button press in pushbutton_tagbeh.
-function pushbutton_tagbeh_Callback(hObject, eventdata, handles)
+% --- Executes on button press in annotation_trigger_button.
+function annotation_trigger_button_Callback(hObject, eventdata, handles)
     % Get behavior number from the edit field
-    behnum = str2double(get(handles.edit_behnum, 'String'));
+    behnum = str2double(get(handles.set_behaviour_number, 'String'));
 
     % Initialize variables
     xmin = [];
@@ -311,7 +311,7 @@ function pushbutton_tagbeh_Callback(hObject, eventdata, handles)
     end
 
     % Tag behaviors based on zoom state
-    if get(handles.radiobutton1_zoom, 'Value') == 0
+    if get(handles.zoom_toggle, 'Value') == 0
         % If not in zoom mode, tag directly on behaviors
         handles.behaviours(xmin1:xmax1) = behnum;
     else
@@ -327,11 +327,11 @@ function pushbutton_tagbeh_Callback(hObject, eventdata, handles)
 end
 
 
-% --- Executes on button press in pushbutton_save.
-function pushbutton_save_Callback(hObject, eventdata, handles)
+% --- Executes on button press in save_accel_button.
+function save_accel_button_Callback(hObject, eventdata, handles)
 
     % Get filename from the edit box
-    filename = get(handles.edit1, 'String');
+    filename = get(handles.video_name_text, 'String');
     newStr = extractBefore(filename, '.');  % Extract the base name without extension
     outfile = fullfile(handles.pathname, [newStr, '_tagged.csv']);  % Create full output file path
 
@@ -364,8 +364,8 @@ function pushbutton_save_Callback(hObject, eventdata, handles)
     fprintf('Finished writing accelerometer file: %s\n', outfile);
 end
 
-% --- Executes on button press in radiobutton1_zoom.
-function radiobutton1_zoom_Callback(hObject, eventdata, handles)
+% --- Executes on button press in zoom_toggle.
+function zoom_toggle_Callback(hObject, eventdata, handles)
     % Update the handles structure to reflect any changes
     guidata(hObject, handles);
 

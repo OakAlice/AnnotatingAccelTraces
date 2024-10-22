@@ -1,15 +1,15 @@
 
-% --- Executes on text edit change for edit1.
-function edit1_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit1 (see GCBO)
+% --- Executes on text edit change for video_name_text.
+function video_name_text_Callback(hObject, eventdata, handles)
+    % hObject    handle to video_name_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     % Add your functionality here for handling text input changes.
 end
 
-% --- Executes during object creation, after setting all properties for edit1.
-function edit1_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit1 (see GCBO)
+% --- Executes during object creation, after setting all properties for video_name_text.
+function video_name_text_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to video_name_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -21,17 +21,17 @@ function edit1_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit2.
-function edit2_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit2 (see GCBO)
+% --- Executes on text edit change for accel_name_text.
+function accel_name_text_Callback(hObject, eventdata, handles)
+    % hObject    handle to accel_name_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     % Add your functionality here for handling text input changes.
 end
 
-% --- Executes during object creation, after setting all properties for edit2.
-function edit2_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit2 (see GCBO)
+% --- Executes during object creation, after setting all properties for accel_name_text.
+function accel_name_text_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to accel_name_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -43,17 +43,17 @@ function edit2_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit3_buffer.
-function edit3_buffer_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit3_buffer (see GCBO)
+% --- Executes on text edit change for set_buffer.
+function set_buffer_Callback(hObject, eventdata, handles)
+    % hObject    handle to set_buffer (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     % Add your functionality here for handling text input changes.
 end
 
-% --- Executes during object creation, after setting all properties for edit3_buffer.
-function edit3_buffer_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit3_buffer (see GCBO)
+% --- Executes during object creation, after setting all properties for set_buffer.
+function set_buffer_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to set_buffer (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -66,17 +66,17 @@ function edit3_buffer_CreateFcn(hObject, eventdata, handles)
 end
 
 
-% --- Executes on text edit change for edit4_getframe.
-function edit4_getframe_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit4_getframe (see GCBO)
+% --- Executes on text edit change for vid_frame_rate_text.
+function vid_frame_rate_text_Callback(hObject, eventdata, handles)
+    % hObject    handle to vid_frame_rate_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     % Add your functionality here for handling text input changes.
 end
 
-% --- Executes during object creation, after setting all properties for edit4_getframe.
-function edit4_getframe_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit4_getframe (see GCBO)
+% --- Executes during object creation, after setting all properties for vid_frame_rate_text.
+function vid_frame_rate_text_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to vid_frame_rate_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -88,17 +88,17 @@ function edit4_getframe_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit5_frame_step.
-function edit5_frame_step_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit5_frame_step (see GCBO)
+% --- Executes on text edit change for set_frame_step_value.
+function set_frame_step_value_Callback(hObject, eventdata, handles)
+    % hObject    handle to set_frame_step_value (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
     % Add your functionality here for handling text input changes.
 end
 
-% --- Executes during object creation, after setting all properties for edit5_frame_step.
-function edit5_frame_step_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit5_frame_step (see GCBO)
+% --- Executes during object creation, after setting all properties for set_frame_step_value.
+function set_frame_step_value_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to set_frame_step_value (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -110,14 +110,14 @@ function edit5_frame_step_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit_framenum.
-function edit_framenum_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit_framenum (see GCBO)
+% --- Executes on text edit change for current_frame.
+function current_frame_Callback(hObject, eventdata, handles)
+    % hObject    handle to current_frame (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
 
     % Convert the string input to a double and update the frame number
-    handles.frame = str2double(get(handles.edit_framenum, 'String'));
+    handles.frame = str2double(get(handles.current_frame, 'String'));
     
     % Optional: Validate the input to ensure it is within acceptable bounds
     if isnan(handles.frame) || handles.frame < 1 || handles.frame > handles.totalframes
@@ -131,9 +131,9 @@ end
 
 
 
-% --- Executes during object creation, after setting all properties for edit_framenum.
-function edit_framenum_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit_framenum (see GCBO)
+% --- Executes during object creation, after setting all properties for current_frame.
+function current_frame_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to current_frame (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -145,18 +145,18 @@ function edit_framenum_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit_acceldate.
-function edit_acceldate_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit_acceldate (see GCBO)
+% --- Executes on text edit change for set_accel_start_datetime.
+function set_accel_start_datetime_Callback(hObject, eventdata, handles)
+    % hObject    handle to set_accel_start_datetime (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
 
     % Add functionality for processing the accelerometer date input here
 end
 
-% --- Executes during object creation, after setting all properties for edit_acceldate.
-function edit_acceldate_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit_acceldate (see GCBO)
+% --- Executes during object creation, after setting all properties for set_accel_start_datetime.
+function set_accel_start_datetime_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to set_accel_start_datetime (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -168,9 +168,9 @@ function edit_acceldate_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit_accelrate.
-function edit_accelrate_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit_accelrate (see GCBO)
+% --- Executes on text edit change for set_accel_frame_rate.
+function set_accel_frame_rate_Callback(hObject, eventdata, handles)
+    % hObject    handle to set_accel_frame_rate (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
 
@@ -187,9 +187,9 @@ function edit_accelrate_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
 end
 
-% --- Executes during object creation, after setting all properties for edit_accelrate.
-function edit_accelrate_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit_accelrate (see GCBO)
+% --- Executes during object creation, after setting all properties for set_accel_frame_rate.
+function set_accel_frame_rate_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to set_accel_frame_rate (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -201,9 +201,9 @@ function edit_accelrate_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit_delay.
-function edit_delay_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit_delay (see GCBO)
+% --- Executes on text edit change for delay_text.
+function delay_text_Callback(hObject, eventdata, handles)
+    % hObject    handle to delay_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
 
@@ -220,9 +220,9 @@ function edit_delay_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
 end
 
-% --- Executes during object creation, after setting all properties for edit_delay.
-function edit_delay_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit_delay (see GCBO)
+% --- Executes during object creation, after setting all properties for delay_text.
+function delay_text_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to delay_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 
@@ -234,9 +234,9 @@ function edit_delay_CreateFcn(hObject, eventdata, handles)
     end
 end
 
-% --- Executes on text edit change for edit_behnum.
-function edit_behnum_Callback(hObject, eventdata, handles)
-    % hObject    handle to edit_behnum (see GCBO)
+% --- Executes on text edit change for set_behaviour_number.
+function set_behaviour_number_Callback(hObject, eventdata, handles)
+    % hObject    handle to set_behaviour_number (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    structure with handles and user data (see GUIDATA)
 
@@ -253,9 +253,9 @@ function edit_behnum_Callback(hObject, eventdata, handles)
     guidata(hObject, handles);
 end
 
-% --- Executes during object creation, after setting all properties for edit_behnum.
-function edit_behnum_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to edit_behnum (see GCBO)
+% --- Executes during object creation, after setting all properties for set_behaviour_number.
+function set_behaviour_number_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to set_behaviour_number (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 

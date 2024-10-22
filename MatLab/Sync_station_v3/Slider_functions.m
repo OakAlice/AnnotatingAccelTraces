@@ -1,9 +1,9 @@
 % slider functions
  
 % --- Executes on slider movement.
-function slider1_Callback(hObject, eventdata, handles)
+function video_slider_Callback(hObject, eventdata, handles)
     % Get the current value of the slider and round it to the nearest integer
-    handles.frame = round(get(handles.slider1, 'Value'));
+    handles.frame = round(get(handles.video_slider, 'Value'));
 
     % Ensure the frame number is within valid bounds
     if handles.frame > handles.totalframes
@@ -13,8 +13,8 @@ function slider1_Callback(hObject, eventdata, handles)
     end
 
     % Update the slider position and display the current frame number
-    set(handles.slider1, 'Value', handles.frame);
-    set(handles.edit_framenum, 'String', num2str(handles.frame));
+    set(handles.video_slider, 'Value', handles.frame);
+    set(handles.current_frame, 'String', num2str(handles.frame));
 
     % Update the handles structure to save changes
     guidata(hObject, handles);
@@ -29,8 +29,8 @@ end
 
 
 % --- Executes during object creation, after setting all properties.
-function slider1_CreateFcn(hObject, eventdata, handles)
-    % hObject    handle to slider1 (see GCBO)
+function video_slider_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to video_slider (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 

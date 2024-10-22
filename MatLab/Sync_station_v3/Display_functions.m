@@ -11,7 +11,7 @@ function mydisplay(hObject, eventdata, handles)
 %   - handles: Structure containing GUI handles and user data.
 
     % Set the target axes for displaying the video frame
-    axes(handles.axes1);
+    axes(handles.video_display);
 
     %% Check if video file is loaded
     if ~isempty(handles.videofile)
@@ -47,21 +47,21 @@ function mydisplay2(hObject, eventdata, handles)
 %   - handles: Structure containing GUI handles and user data.
 
     % Set the target axes for plotting accelerometer data
-    axes(handles.axes2);
+    axes(handles.large_accelerometer_display);
 
     % Retrieve the frame rate and sampling frequency from the GUI
-    framerate = str2double(get(handles.edit4_getframe, 'String'));  % Frame rate of the video
-    samplingF = str2double(get(handles.edit_accelrate, 'String'));  % Accelerometer sampling frequency
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));  % Frame rate of the video
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String'));  % Accelerometer sampling frequency
 
     % Calculate the scaling factor between sampling frequency and frame rate
     handles.Cfact = samplingF / framerate;
 
     % Calculate the time in seconds based on the current frame, compensating for any delay
-    delay = str2double(get(handles.edit_delay, 'String'));
+    delay = str2double(get(handles.delay_text, 'String'));
     time_sec = round(handles.frame * handles.Cfact - delay + handles.start);
 
     % Check if zoom mode is off
-    if get(handles.radiobutton1_zoom, 'Value') == 0
+    if get(handles.zoom_toggle, 'Value') == 0
         % Plot the full accelerometer data (X, Y, Z axes in blue, red, green)
         plot(handles.accel_chunk(:, 2), 'b');  % X-axis data (blue)
         hold on;
@@ -86,7 +86,7 @@ function mydisplay2(hObject, eventdata, handles)
     end
 
     % Optionally, another axes can be set for additional plotting (currently commented out)
-    % axes(handles.axes3);
+    % axes(handles.small_accelerometer_display);
     % plot(handles.time, handles.act, 'b');
 
     % Save the updated handles structure
@@ -94,7 +94,7 @@ function mydisplay2(hObject, eventdata, handles)
 end
 
 
-% Function for displaying accelerometer data along with behaviors on axes3
+% Function for displaying accelerometer data along with behaviors on small_accelerometer_display
 function mydisplay3(hObject, eventdata, handles)
 % mydisplay3: Displays accelerometer data and behavioral annotations in the GUI.
 %
@@ -104,17 +104,17 @@ function mydisplay3(hObject, eventdata, handles)
 %   - handles: Structure containing GUI handles and user data.
 
     % Set the target axes for plotting
-    axes(handles.axes3);
+    axes(handles.small_accelerometer_display);
 
     % Retrieve frame rate and sampling frequency from the GUI
-    framerate = str2double(get(handles.edit4_getframe, 'String'));  % Frame rate of the video
-    samplingF = str2double(get(handles.edit_accelrate, 'String'));  % Accelerometer sampling frequency
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));  % Frame rate of the video
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String'));  % Accelerometer sampling frequency
 
     % Calculate scaling factor between sampling frequency and frame rate
     handles.Cfact = samplingF / framerate;
 
     % Calculate the current time in seconds based on the frame number and delay
-    delay = str2double(get(handles.edit_delay, 'String'));  % Delay in video/accelerometer alignment
+    delay = str2double(get(handles.delay_text, 'String'));  % Delay in video/accelerometer alignment
     time_sec = round(handles.frame * handles.Cfact - delay + handles.start);
 
     %% Plot accelerometer data and behavior annotations
@@ -132,7 +132,7 @@ function mydisplay3(hObject, eventdata, handles)
     vline(time_sec);
 
     % Optionally, other plots can be added (currently commented out)
-    % axes(handles.axes3);
+    % axes(handles.small_accelerometer_display);
     % plot(handles.time, handles.act, 'b');
 
     % Update the handles structure with the new data

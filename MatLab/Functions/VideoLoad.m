@@ -18,7 +18,7 @@ function load_video_button_Callback(hObject, eventdata, handles)
     % Create a VideoReader object for the video file
     video = VideoReader(handles.videofile);
     
-    % Read the last frame to initialize the video (this step could be optional)
+    % Read the last frame to initialize the video
     lastFrame = read(video, inf);
     
     % Retrieve the number of frames from the video
@@ -73,6 +73,29 @@ end
 % --- Executes during object creation, after setting all properties for video_name_text.
 function video_name_text_CreateFcn(hObject, eventdata, handles)
     % hObject    handle to video_name_text (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    empty - handles not created until after all CreateFcns called
+
+    % Hint: edit controls usually have a white background on Windows.
+    % See ISPC and COMPUTER.
+    if ispc && isequal(get(hObject, 'BackgroundColor'), get(0, 'defaultUicontrolBackgroundColor'))
+        % Set a white background for the edit control on Windows
+        set(hObject, 'BackgroundColor', 'white');
+    end
+end
+
+
+% --- Executes on text edit change for vid_frame_rate_text.
+function vid_frame_rate_text_Callback(hObject, eventdata, handles)
+    % hObject    handle to vid_frame_rate_text (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    % Add your functionality here for handling text input changes.
+end
+
+% --- Executes during object creation, after setting all properties for vid_frame_rate_text.
+function vid_frame_rate_text_CreateFcn(hObject, eventdata, handles)
+    % hObject    handle to vid_frame_rate_text (see GCBO)
     % eventdata  reserved - to be defined in a future version of MATLAB
     % handles    empty - handles not created until after all CreateFcns called
 

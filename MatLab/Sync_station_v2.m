@@ -1,22 +1,21 @@
 function varargout = Sync_station_v2(varargin)
 % SYNC_STATION_V2 MATLAB code for Sync_station_v2.fig
 %      This code is an updated version of the accelerometer annotation
-%      software designed for Galea et al., 2021 by Chris Clemente. The
+%      software designed for Galea et al., 2021 by Chris Clemente. The 
 %      function of this program is to annotate a raw accelerometer trace
 %      with the behaviours it contains based on concurrently filmed video.
-%      A video is loaded, the datetime of the connected 
-
-
-
+%      A video is loaded, the datetime of the connected
 
 % Begin initialization code - DO NOT EDIT
 gui_Singleton = 1;
-gui_State = struct('gui_Name',       mfilename, ...
-                   'gui_Singleton',  gui_Singleton, ...
-                   'gui_OpeningFcn', @initialise_gui_fun, ...
-                   'gui_OutputFcn',  @print_to_terminal_fun, ...
-                   'gui_LayoutFcn',  [] , ...
-                   'gui_Callback',   []);
+gui_State = struct(...
+    'gui_Name',       mfilename, ...
+    'gui_Singleton',  gui_Singleton, ...
+    'gui_OpeningFcn', @initialise_gui_fun, ...
+    'gui_OutputFcn',  @print_to_terminal_fun, ...
+    'gui_LayoutFcn',  [], ...
+    'gui_Callback',   []);
+
 if nargin && ischar(varargin{1})
     gui_State.gui_Callback = str2func(varargin{1});
 end
@@ -28,340 +27,277 @@ else
 end
 % End initialization code - DO NOT EDIT
 
-
 % --- Executes just before Sync_station_v2 is made visible.
 function initialise_gui_fun(hObject, eventdata, handles, varargin)
-% This function has no output args, see OutputFcn.
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-% varargin   command line arguments to Sync_station_v2 (see VARARGIN)
+    % This function has no output args, see OutputFcn.
+    % hObject    handle to figure
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
+    % varargin   command line arguments to Sync_station_v2 (see VARARGIN)
 
-% Choose default command line output for Sync_station_v2
-handles.output = hObject;
+    % Choose default command line output for Sync_station_v2
+    handles.output = hObject;
 
-% Update handles structure
-guidata(hObject, handles);
+    % Update handles structure
+    guidata(hObject, handles);
 
-% UIWAIT makes Sync_station_v2 wait for user response (see UIRESUME)
-% uiwait(handles.figure1);
+    % UIWAIT makes Sync_station_v2 wait for user response (see UIRESUME)
+    % uiwait(handles.figure1);
 
 
 % --- Outputs from this function are returned to the command line.
 function varargout = print_to_terminal_fun(hObject, eventdata, handles) 
-% varargout  cell array for returning output args (see VARARGOUT);
-% hObject    handle to figure
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+    % varargout  cell array for returning output args (see VARARGOUT);
+    % hObject    handle to figure
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
 
-% Get default command line output from handles structure
-varargout{1} = handles.output;
-
-
+    % Get default command line output from handles structure
+    varargout{1} = handles.output;
 
 % --- Function for displaying the video
 function display_video_fun(hObject, eventdata, handles)
-% main update screen function
-
-%handles.frame=round(get(handles.slider_frames,'Value'));
-%set(handles.edit3_framenum,'String',num2str(handles.frame));
-% angle=str2double(get(handles.rotation,'String'));
-% low_in=str2double(get(handles.low_in,'String'))/handles.white;
-% high_in=str2double(get(handles.high_in,'String'))/handles.white;
-% gamma=str2double(get(handles.gamma,'String'));
-
-axes(handles.video_display);
-
-%% open and show video frame
-if ~isempty(handles.videofile) 
-    if strcmp(handles.ext,'.avi') || strcmp(handles.ext,'.AVI')|| strcmp(handles.ext,'.MP4') || strcmp(handles.ext,'.MPG') || strcmp(handles.ext,'.MOV')
+    % main update screen function
+    
+    axes(handles.video_display);
+    
+    %% open and show video frame
+    if ~isempty(handles.videofile) 
+        if strcmp(handles.ext,'.avi') || strcmp(handles.ext,'.AVI')|| strcmp(handles.ext,'.MP4') || strcmp(handles.ext,'.MPG') || strcmp(handles.ext,'.MOV')
             mov = read(handles.video, handles.frame);
-%             
+        end
+        
+        imshow(mov);
+        pause(1/handles.framerate);
     end
     
-%     mov = imrotate(mov,angle);
-%     mov = imadjust(mov,[low_in; high_in],[0; 1],gamma);
-    imshow(mov);
-    pause(1/handles.framerate);
-end
+    guidata(hObject,handles)
 
-
-% axes(handles.large_accelerometer_display)
-% vline(100)
-
-
-guidata(hObject,handles)
-
-% function for displaying the acclerometer
+% function for displaying the accelerometer
 function display_large_accel_fun(hObject, eventdata, handles)
+    axes(handles.large_accelerometer_display)
+    
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String')); 
+    handles.Cfact = samplingF/framerate;
+    
+    delay = str2double(get(handles.delay_text,'String'));
+    time_sec = round(handles.frame*handles.Cfact-delay+handles.start);
+    
+    if get(handles.zoom_toggle,'Value')==0
+        % displaying and coloring each of the axes
+        plot(handles.accel_chunk(:,2),'b')
+        hold on
+        plot(handles.accel_chunk(:,3),'r')
+        plot(handles.accel_chunk(:,4),'g')
+        hold off
+        
+        vline(time_sec)
+    else
+        plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,2),'b')
+        hold on
+        plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,3),'r')
+        plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,4),'g')
+        hold off  
+        
+        vline(time_sec-handles.start_zoom)
+    end
 
-axes(handles.large_accelerometer_display)
+    guidata(hObject,handles)
 
-framerate=str2double(get(handles.vid_frame_rate_text, 'String'));
-samplingF=str2double(get(handles.set_accel_frame_rate, 'String'));
-handles.Cfact=samplingF/framerate;
-
-    delay=str2double(get(handles.delay_text,'String'));
-    time_sec=round(handles.frame*handles.Cfact-delay+handles.start);
-
-
-if get(handles.zoom_toggle,'Value')==0
-% displaying and colouring each of the axes
-plot(handles.accel_chunk(:,2),'b')
-hold on
-plot(handles.accel_chunk(:,3),'r')
-plot(handles.accel_chunk(:,4),'g')
-hold off
-
- vline(time_sec)
-
-else
- plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,2),'b')
-hold on
-plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,3),'r')
-plot(handles.accel_chunk(handles.start_zoom:handles.end_zoom,4),'g')
-hold off  
-
- vline(time_sec-handles.start_zoom)
-
-end
-
-
-
-% axes(handles.small_accelerometer_display)
-% plot(handles.time,handles.act,'b')
-
-guidata(hObject,handles)
-
-% function for displaying the acclerometer
+% function for displaying the accelerometer 
 function display_small_accel_fun(hObject, eventdata, handles)
+    axes(handles.small_accelerometer_display)
 
-axes(handles.small_accelerometer_display)
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String'));
+    handles.Cfact = samplingF/framerate;
 
-framerate=str2double(get(handles.vid_frame_rate_text, 'String'));
-samplingF=str2double(get(handles.set_accel_frame_rate, 'String'));
-handles.Cfact=samplingF/framerate;
+    delay = str2double(get(handles.delay_text,'String'));
+    time_sec = round(handles.frame*handles.Cfact-delay+handles.start);
 
-    delay=str2double(get(handles.delay_text,'String'));
-    time_sec=round(handles.frame*handles.Cfact-delay+handles.start);
+    % displaying and coloring each of the axes
+    plot(handles.accel_chunk(:,2),'b')
+    hold on
+    plot(handles.behaviours,'r')
+    hold off
+    vline(time_sec)
 
-
-% displaying and colouring each of the axes
-plot(handles.accel_chunk(:,2),'b')
-hold on
-plot(handles.behaviours,'r')
-hold off
- vline(time_sec)
-
-% axes(handles.small_accelerometer_display)
-% plot(handles.time,handles.act,'b')
-
-
-guidata(hObject,handles)
-
+    guidata(hObject,handles)
 
 %PUSH BUTTONS 
 
 % --- Executes on button press in load_video_button.
-% push button for accessing the video
+% Push button for accessing and initializing the video file
 function load_video_button_Callback(hObject, eventdata, handles)
-[handles.videofilename, handles.pathname]=uigetfile({'*.MOV;*.avi;*.MP4;*.seq','Video files';'*.tif;*.jpg;*.bmp', 'Image files'},'pick file');
-handles.videofile = fullfile(handles.pathname,handles.videofilename);
-[~,handles.name,handles.ext] = fileparts(handles.videofile);
+    % Get video file from user
+    [handles.videofilename, handles.pathname] = uigetfile(...
+        {'*.MOV;*.avi;*.MP4;*.seq', 'Video files'; ...
+         '*.tif;*.jpg;*.bmp', 'Image files'}, ...
+        'Pick file');
+    handles.videofile = fullfile(handles.pathname, handles.videofilename);
+    [~, handles.name, handles.ext] = fileparts(handles.videofile);
 
-%% MOV files, initialise
+    % Initialize video reader and get properties
     video = VideoReader(handles.videofile);
-        lastFrame = read(video, inf);
-        numFrames = video.NumberOfFrames;
-        handles.video=video;
-        handles.totalframes = video.NumberOfFrames;
-        handles.height = video.Height;
-        handles.width = video.Width;
-        handles.white= 2^(video.BitsPerPixel/3)-1; 
-        handles.framerate = video.FrameRate;
-        set(handles.vid_frame_rate_text,'String',handles.framerate);
-        set(handles.video_slider,'max',handles.totalframes, 'min',1,'Value',1);
-        set(handles.video_slider, 'SliderStep', [1/handles.totalframes , 10/handles.totalframes ]);
-set(handles.current_frame,'String','1');
-%set(handles.accel_name_text_totalframes,'String',num2str(handles.totalframes));
-set(handles.video_name_text,'String',handles.videofilename);
-handles.frame=1;
-handles.rect=[];
-handles.stop=0;
+    lastFrame = read(video, inf);
+    numFrames = video.NumberOfFrames;
+    
+    % Store video properties in handles
+    handles.video = video;
+    handles.totalframes = video.NumberOfFrames;
+    handles.height = video.Height;
+    handles.width = video.Width;
+    handles.white = 2^(video.BitsPerPixel/3)-1;
+    handles.framerate = video.FrameRate;
+    
+    % Update UI elements
+    set(handles.vid_frame_rate_text, 'String', handles.framerate);
+    set(handles.video_slider, 'max', handles.totalframes, 'min', 1, 'Value', 1);
+    set(handles.video_slider, 'SliderStep', [1/handles.totalframes, 10/handles.totalframes]);
+    set(handles.current_frame, 'String', '1');
+    set(handles.video_name_text, 'String', handles.videofilename);
+    
+    % Initialize other handles properties
+    handles.frame = 1;
+    handles.rect = [];
+    handles.stop = 0;
 
-guidata(hObject, handles);
-display_video_fun(hObject, eventdata, handles)
-
+    % Update handles and display video
+    guidata(hObject, handles);
+    display_video_fun(hObject, eventdata, handles)
 
 function load_accel_button_Callback(hObject, eventdata, handles)
+    % Reset display settings
+    set(handles.delay_text, 'String', '0')
+    set(handles.zoom_toggle, 'Value', 0)
 
-set(handles.delay_text,'String','0')
-set(handles.zoom_toggle,'Value',0)
+    % Get video end time and calculate start time
+    videoendtime = get(handles.set_accel_start_datetime, 'String');
+    DateNumber = datetime(videoendtime);
+    video_duration = seconds(handles.totalframes * (1/handles.framerate));
+    DateNumber_start = DateNumber - video_duration;
 
-% find the video time (which happens to be the end)
-videoendtime=get(handles.set_accel_start_datetime, 'String');
-DateNumber = datetime( videoendtime ); % convert to date time
-% find the start time by getting the end time minus the duration
-DateNumber_start = DateNumber - seconds((handles.totalframes*(1/handles.framerate)));
+    % Load accelerometer file
+    [handles.accelfilename, handles.pathname] = uigetfile('*.csv*', 'Select accelerometer file');
+    handles.accelfile = fullfile(handles.pathname, handles.accelfilename);
 
-[handles.accelfilename, handles.pathname]=uigetfile('*.csv*','pick file');
-handles.accelfile = fullfile(handles.pathname,handles.accelfilename);
-%set(handles.video_name_text5_timestamp,'String',handles.accelfilename);
+    % Read first two rows of accelerometer data to determine sampling rate
+    try
+        accel_temp = dlmread(handles.accelfile, ',', [0,0,1,3]);
+    catch
+        accel_temp = importdata(handles.accelfile);
+    end
 
-% get the first 2 rows of the accelerometer trace
-% we are going to use this to determine the frame rate
-% indexing begins at 0 for this specific case
+    % Calculate time intervals
+    time_interval_in_seconds = etime(datevec(accel_temp(2,1)), datevec(accel_temp(1,1)));
+    time_to_video_start = etime(datevec(DateNumber_start), datevec(accel_temp(1,1)));
 
-try
-accel_temp=dlmread(handles.accelfile,',',[0,0,1,3]);
-catch
-accel_temp=importdata(handles.accelfile);
-end
+    % Calculate start and end indices for accelerometer data
+    start = round(time_to_video_start / time_interval_in_seconds);
+    handles.start = start;
 
+    % Calculate end index based on video duration
+    accel_rate = str2double(get(handles.set_accel_frame_rate, 'String'));
+    video_samples = handles.totalframes * (accel_rate/handles.framerate);
+    end_vid = round(start + video_samples);
 
-% get the time interval between the two instances
-time_interval_in_seconds = etime(datevec(accel_temp(2,1)),datevec(accel_temp(1,1)));
+    % Add buffer zones
+    buffer_size = str2double(get(handles.set_buffer, 'String'));
+    start_buffer = max(0, start - buffer_size);  % Ensure non-negative
+    end_buffer = round(end_vid + buffer_size);
 
-% now we want to find the part of the accelerometer trace that aligns with
-% the video content
-%time interval from the start of the accel file to the start of the video
-time_interval_in_seconds2 = etime(datevec(DateNumber_start),datevec(accel_temp(1,1)));
+    % Load accelerometer chunk with error handling
+    try
+        accel_chunk = dlmread(handles.accelfile, ',', [start_buffer,0,end_buffer,3]);
+    catch
+        % If end_buffer is too large, try without buffer
+        accel_chunk = dlmread(handles.accelfile, ',', [start_buffer,0,end_vid,3]);
+    end
 
-% calculate the first line of the accel trace you want to retrieve
-start=round(time_interval_in_seconds2/time_interval_in_seconds);
-handles.start=start;
-% calaculate the last line of the accel trace you want to retrieve
-% do this by getting the start, and then adding the number of frames equal
-% to the duration of the video
-end_vid=round(start+(handles.totalframes*(1/handles.framerate)/(1/str2double(get(handles.set_accel_frame_rate,'String')))));
+    % Store data in handles
+    handles.accel_chunk = accel_chunk;
+    set(handles.accel_name_text, 'String', datestr(accel_chunk(1,1)))
 
-% add buffers (to account for rounding inaccuracies and drift)
-start_buffer=start-str2double(get(handles.set_buffer,'String'));
-end_buffer=round(end_vid+str2double(get(handles.set_buffer,'String')));
-end_buffer
-% the start buffer may be a negative frame number, so account for this by
-% setting negative values to 0
-if start_buffer<0
-    start_buffer=0;
-end
-% the end buffer might be longer than the whole trace, so account for this
-% by preventing the frame index exceeding the avaliable row index
-try
-   accel_chunk=dlmread(handles.accelfile,',',[start_buffer,0,end_buffer,3]);
-catch
-   accel_chunk=dlmread(handles.accelfile,',',[start_buffer,0,end_vid,3]);
-end
+    % Initialize behaviors vector
+    handles.behaviours = zeros(length(accel_chunk(:,1)), 1);
 
-handles.accel_chunk=accel_chunk;
-
-set(handles.accel_name_text,'String',datestr(accel_chunk(1,1)))
-
-
-%create a vector of zeros which will become the behaviours
-handles.behaviours=zeros(length(accel_chunk(:,1)),1);
-
-
-
-guidata(hObject,handles)
-display_large_accel_fun(hObject, eventdata, handles)
-display_small_accel_fun(hObject, eventdata, handles)
+    % Update displays
+    guidata(hObject, handles)
+    display_large_accel_fun(hObject, eventdata, handles)
+    display_small_accel_fun(hObject, eventdata, handles)
 
 % --- Executes on button press in play_button.
 function play_button_Callback(hObject, eventdata, handles)
-global stop
-stop = true;
-
-%axes(handles.video_display)
-handles.stop = 0;
-
-step=str2double(get(handles.set_frame_step_value, 'String')); 
-handles.frame=str2double(get(handles.current_frame, 'String')); 
-
-while(1)
-%    frame = read(handles.video,handles.frame);
-%    imshow(frame); % You may use button to host the image
-   %drawnow
-   
-   % Stop playing
-%     if handles.stop == 1
-%        break;
-%     end
+    global stop
+    stop = true;
     
-    % Stop playing
-    if stop == false
-       break;
+    handles.stop = 0;
+    
+    % Get step size and current frame
+    step = str2double(get(handles.set_frame_step_value, 'String'));
+    handles.frame = str2double(get(handles.current_frame, 'String'));
+    
+    while(1)
+        % Check for stop condition
+        if stop == false
+            break;
+        end
+        
+        % Update frame counter and UI
+        handles.frame = handles.frame + step;
+        set(handles.video_slider, 'Value', handles.frame);
+        set(handles.current_frame, 'String', num2str(handles.frame));
+        
+        % Check if reached end of video
+        if handles.frame > handles.totalframes
+            break;
+        end
+        
+        % Update displays
+        display_video_fun(hObject, eventdata, handles)
+        display_large_accel_fun(hObject, eventdata, handles)
+        display_small_accel_fun(hObject, eventdata, handles)
     end
-
-    handles.frame = handles.frame+step;
-    set(handles.video_slider,'Value',handles.frame);
-    set(handles.current_frame,'String',num2str(handles.frame));
-    
-    % If frame is finished, break
-    
-    if handles.frame>handles.totalframes
-         break;
-    end
-    
-    display_video_fun(hObject, eventdata, handles)
-    display_large_accel_fun(hObject, eventdata, handles)
-    display_small_accel_fun(hObject, eventdata, handles)
-end  
     
 % --- Executes on button press in stop_button.
 function stop_button_Callback(hObject, eventdata, handles)
-% handles.stop = 1;
-% print('you pressed stop')
-% guidata(hObject, handles);
-
- global stop
-     stop=false;
+    global stop
+    stop = false;
 
 % --- Executes on button press in delay_calculation_button.
 function delay_calculation_button_Callback(hObject, eventdata, handles)
-% hObject    handle to delay_calculation_button (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
-xmin=[];
-xmax=[];
-[x,y]=ginput(1);
-
-xmin=round(x(1));
-xmin1=xmin(1);
-
-                if xmin1<0
-                    xmin1=1;
-                end
-                
-framerate=str2double(get(handles.vid_frame_rate_text, 'String'));
-samplingF=str2double(get(handles.set_accel_frame_rate, 'String'));
-handles.Cfact=samplingF/framerate;
-
-
-% currently this doesnt work in zoom mode. 
-% need to fix this section (TODO)
-
-if get(handles.zoom_toggle, 'Value')==0
-    %delay=str2double(get(handles.delay_text,'String'));
-    %gets the current frame then removes the cursor position. 
-    time_sec=round(handles.frame*handles.Cfact+handles.start); 
-    set(handles.delay_text,'String',num2str(time_sec-xmin1))
-else
-    %delay=str2double(get(handles.delay_text,'String'));
-    %old version
-    %time_sec=round(handles.frame*handles.Cfact-delay+handles.start-handles.start_zoom); 
+    % hObject    handle to delay_calculation_button (see GCBO)
+    % eventdata  reserved - to be defined in a future version of MATLAB
+    % handles    structure with handles and user data (see GUIDATA)
     
-    %this is the current frame if it wasn't zoomed in. 
-    time_sec=round(handles.frame*handles.Cfact+handles.start); 
+    % Get click position
+    [x,~] = ginput(1);
+    xmin = round(x(1));
     
-    %delay will now be the difference between time_sec and 
-    new_delay=round(time_sec-(handles.start_zoom+xmin1));
-    set(handles.delay_text,'String',num2str(new_delay))
-
-end
+    % Calculate conversion factor between video and accelerometer sampling rates
+    framerate = str2double(get(handles.vid_frame_rate_text, 'String'));
+    samplingF = str2double(get(handles.set_accel_frame_rate, 'String')); 
+    handles.Cfact = samplingF/framerate;
     
-%set(handles.delay_text,'String',num2str(time_sec-xmin1))
-guidata(hObject, handles);
-display_large_accel_fun(hObject, eventdata, handles)
+    % Calculate current time in accelerometer samples
+    time_sec = round(handles.frame * handles.Cfact + handles.start);
+    
+    % Calculate delay based on zoom state
+    if get(handles.zoom_toggle, 'Value') == 0
+        % Not zoomed - delay is difference between current time and click position
+        delay = time_sec - xmin;
+    else
+        % Zoomed - need to account for zoom offset
+        delay = time_sec - (handles.start_zoom + xmin);
+    end
+    
+    % Update delay display
+    set(handles.delay_text, 'String', num2str(delay));
+    
+    % Update handles and display
+    guidata(hObject, handles);
+    display_large_accel_fun(hObject, eventdata, handles)
 
 % --- Executes on button press in zoom_trigger_button.
 function zoom_trigger_button_Callback(hObject, eventdata, handles)
@@ -412,104 +348,69 @@ set(handles.behaviours_table, 'Data', table2cell(handles.beh));
 set(handles.behaviours_table, 'ColumnName', {'number','behaviour'});
 guidata(hObject,handles)
 
-
 % --- Executes on button press in annotation_trigger_button.
 function annotation_trigger_button_Callback(hObject, eventdata, handles)
-
-behnum=str2num(get(handles.set_behaviour_number,'String'));
-
-xmin=[];
-xmax=[];
-xmin1=[];
-xmax1=[];
-[x,y]=ginput(2);
-xmin=round(x(1));
-xmin1=xmin(1);
-xmax=round(x(2));
-xmax1=xmax(1);
-                if xmin1<0
-                    xmin1=1;
-                end
-                if xmin1>xmax1
-                    xmax1=xmin1;
-                    xmin1=xmax1;
-                else
-                    xmin1=xmin1;
-                    xmax1=xmax1;
-                end
-
-
-if get(handles.zoom_toggle, 'Value')==0         
-    handles.behaviours(xmin1:xmax1)=behnum;
-else
-    handles.behaviours(handles.start_zoom+xmin1:handles.start_zoom+xmax1)=behnum;
-end
-
-guidata(hObject,handles)
-display_small_accel_fun(hObject, eventdata, handles)
-
-
-
-% --- Executes on button press in save_accel_button.
-function save_accel_button_Callback(hObject, eventdata, handles)
-
-%get filename
-filename=get(handles.video_name_text,'String');
-newStr = extractBefore(filename,'.');
-outfile = [handles.pathname,newStr,'_tagged.csv'];
-
-time=handles.accel_chunk(:,1);
-x=handles.accel_chunk(:,2);
-y=handles.accel_chunk(:,3); 
-z=handles.accel_chunk(:,4); 
-behnum=handles.behaviours;
-
-act = NaN( length(handles.accel_chunk(:,2)), 1 ) ;
-activity = num2cell( act );
-
-for kk=1:(length(handles.accel_chunk(:,2)))
-
-    if handles.behaviours(kk)~=0
-        activity{kk}=table2array(handles.beh((find(table2array(handles.beh(:,1))==handles.behaviours(kk))),2));  
+    behnum = str2num(get(handles.set_behaviour_number, 'String'));
+    
+    xmin = [];
+    xmax = [];
+    xmin1 = [];
+    xmax1 = [];
+    [x,y] = ginput(2);
+    xmin = round(x(1));
+    xmin1 = xmin(1);
+    xmax = round(x(2));
+    xmax1 = xmax(1);
+    
+    if xmin1 < 0
+        xmin1 = 1;
+    end
+    if xmin1 > xmax1
+        xmax1 = xmin1;
+        xmin1 = xmax1;
+    else
+        xmin1 = xmin1;
+        xmax1 = xmax1;
     end
 
-end
+    if get(handles.zoom_toggle, 'Value') == 0         
+        handles.behaviours(xmin1:xmax1) = behnum;
+    else
+        handles.behaviours(handles.start_zoom+xmin1:handles.start_zoom+xmax1) = behnum;
+    end
 
+    guidata(hObject, handles)
+    display_small_accel_fun(hObject, eventdata, handles)
+% --- Executes on button press in save_accel_button.
+function save_accel_button_Callback(hObject, eventdata, handles)
+    % Get filename
+    filename = get(handles.video_name_text, 'String');
+    newStr = extractBefore(filename, '.');
+    outfile = [handles.pathname, newStr, '_tagged.csv'];
 
-tableout = table(time,x,y,z,activity,behnum);
+    % Extract data columns
+    time = handles.accel_chunk(:,1);
+    x = handles.accel_chunk(:,2);
+    y = handles.accel_chunk(:,3); 
+    z = handles.accel_chunk(:,4); 
+    behnum = handles.behaviours;
 
-writetable(tableout,outfile)
+    % Initialize activity cell array
+    act = NaN(length(handles.accel_chunk(:,2)), 1);
+    activity = num2cell(act);
 
+    % Fill in activity labels
+    for kk = 1:length(handles.accel_chunk(:,2))
+        if handles.behaviours(kk) ~= 0
+            activity{kk} = table2array(handles.beh((find(table2array(handles.beh(:,1)) == handles.behaviours(kk))), 2));  
+        end
+    end
 
+    % Create and write output table
+    tableout = table(time, x, y, z, activity, behnum);
+    writetable(tableout, outfile)
 
-% 
-% 
-% for kk=1:(length(handles.accel_chunk(:,2)))
-% 
-% if handles.behaviours(kk)==0
-%     behnum=0;
-%     act='NA';
-% else
-%     behnum=handles.behaviours(kk);
-%     act=table2array(handles.beh((find(table2array(handles.beh(:,1))==handles.behaviours(kk))),2));  
-%     act=act{1};
-% end
-% 
-% 
-% 
-% fid = fopen(outfile,'a+');
-%           %       fid = fopen('C:\Users\DrClemente\Desktop\copout.txt','a+');
-%  fprintf(fid, '%s\t %6.6f\t %6.6f\t %6.6f\t %6.6f\t %s\t %6.6f\n',newStr,handles.accel_chunk(kk,1),handles.accel_chunk(kk,2),handles.accel_chunk(kk,3), handles.accel_chunk(kk,4), act, behnum);
-%  fclose(fid);
-%  fclose('all');
-% 
-% end
-
-fprintf('finished writing accel file\n')
-
-
-
-
+    fprintf('finished writing accel file\n')
 
 %radio buttons
 
@@ -565,217 +466,91 @@ end
 
 
 
-
 %EDIT BUTTONS 
 
 function video_name_text_Callback(hObject, eventdata, handles)
-% hObject    handle to video_name_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function video_name_text_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to video_name_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function accel_name_text_Callback(hObject, eventdata, handles)
-% hObject    handle to accel_name_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function accel_name_text_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to accel_name_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function set_buffer_Callback(hObject, eventdata, handles)
-% hObject    handle to set_buffer (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function set_buffer_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to set_buffer (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function vid_frame_rate_text_Callback(hObject, eventdata, handles)
-% hObject    handle to vid_frame_rate_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function vid_frame_rate_text_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to vid_frame_rate_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function set_frame_step_value_Callback(hObject, eventdata, handles)
-% hObject    handle to set_frame_step_value (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function set_frame_step_value_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to set_frame_step_value (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function current_frame_Callback(hObject, eventdata, handles)
+    handles.frame=str2double(get(handles.current_frame, 'String'));
+    guidata(hObject, handles);
+    display_video_fun(hObject, eventdata, handles)
 
-handles.frame=str2double(get(handles.current_frame, 'String'));
-guidata(hObject, handles);
-display_video_fun(hObject, eventdata, handles)
-
-% --- Executes during object creation, after setting all properties.
 function current_frame_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to current_frame (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
-if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
-    set(hObject,'BackgroundColor','white');
-end
+    if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
+  set(hObject,'BackgroundColor','white');
+    end
 
 function set_accel_start_datetime_Callback(hObject, eventdata, handles)
-% hObject    handle to set_accel_start_datetime (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function set_accel_start_datetime_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to set_accel_start_datetime (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function set_accel_frame_rate_Callback(hObject, eventdata, handles)
-% hObject    handle to set_accel_frame_rate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-
-% --- Executes during object creation, after setting all properties.
 function set_accel_frame_rate_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to set_accel_frame_rate (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
 function delay_text_Callback(hObject, eventdata, handles)
-% hObject    handle to delay_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    structure with handles and user data (see GUIDATA)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function delay_text_CreateFcn(hObject, eventdata, handles)
-% hObject    handle to delay_text (see GCBO)
-% eventdata  reserved - to be defined in a future version of MATLAB
-% handles    empty - handles not created until after all CreateFcns called
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
-
 
 function set_behaviour_number_Callback(hObject, eventdata, handles)
+% Empty callback
 
-% --- Executes during object creation, after setting all properties.
 function set_behaviour_number_CreateFcn(hObject, eventdata, handles)
-
-% Hint: edit controls usually have a white background on Windows.
-%       See ISPC and COMPUTER.
 if ispc && isequal(get(hObject,'BackgroundColor'), get(0,'defaultUicontrolBackgroundColor'))
     set(hObject,'BackgroundColor','white');
 end
 
-
-
-
-
-%%functions
-
-function hhh=vline(x,in1,in2)
-% function h=vline(x, linetype, label)
-% 
-% Draws a vertical line on the current axes at the location specified by
-% 'x'.  Optional arguments are 'linetype' (default is 'r:') and 'label',
-% which applies a text label to the graph near the line.  The label appears
-% in the same color as the line.
-%
-% The line is held on the current axes, and after plotting the line, the
-% function returns the axes to its prior hold state.
-%
-% The HandleVisibility property of the line object is set to "off", so not
-% only does it not appear on legends, but it is not findable by using
-% findobj.  Specifying an output argument causes the function to return a
-% handle to the line, so it can be manipulated or deleted.  Also, the
-% HandleVisibility can be overridden by setting the root's ShowHiddenHandles
-% property to on.
-%
-% h = vline(42,'g','The Answer')
-%
-% returns a handle to a green vertical line on the current axes at x=42, and
-% creates a text object on the current axes, close to the line, which reads
-% "The Answer".
-%
-% vline also supports vector inputs to draw multiple lines at once.  For
-% example,
-%
-% vline([4 8 12],{'g','r','b'},{'l1','lab2','LABELC'})
-%
-% draws three lines with the appropriate labels and colors.
-% 
-% By Brandon Kuczenski for Kensington Labs.
-% brandon_kuczenski@kensingtonlabs.com
-% 8 November 2001
-
+% --- Executes on button press in vline_button.
 if length(x)>1  % vector input
     for I=1:length(x)
         switch nargin
